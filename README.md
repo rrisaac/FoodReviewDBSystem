@@ -113,3 +113,10 @@ connection = mysql.connector.connect(
 
 # Example usage
 read_all_food_establishments(connection)
+
+## Contributors
+
+- **Rey Isaac Jr.**
+- **Beatrice Elaine Capule**
+- **Klenn Jakek Borja**
+

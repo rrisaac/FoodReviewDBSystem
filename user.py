@@ -57,7 +57,7 @@ def read_certain_user(connection, user_username):
         
         # If user in selected query is not found:
         else:
-            print("\nNo user found with the name '{}'.\n".format(user_username))
+            print("\nNo user found with the username '{}'.\n".format(user_username))
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch user.")

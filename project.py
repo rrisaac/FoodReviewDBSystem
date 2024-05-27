@@ -290,7 +290,7 @@ def main():
                         # Insert necessary input parameter statement here...
                         input_attribute = input("Input attribute to be changed: ")
                         user_username = input("Input username of the user to be updated: ")
-                        input_username = input(f"Input new value of {user_username} in field {input_attribute}: ")
+                        input_username = input(f"Input new {input_attribute} value of {user_username}: ")
                         user.update_user(connection, input_attribute, user_username, input_username)
                         
                     # Delete User

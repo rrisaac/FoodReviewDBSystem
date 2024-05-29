@@ -1,5 +1,8 @@
 # CMSC 127 - S5L (Borja_Capule_Isaac)
 import mysql.connector
+from mysql.connector import errorcode
+from dotenv import load_dotenv
+import os
 import food_establishment
 import user
 import food_item
@@ -119,11 +122,15 @@ def display_summary_reports_menu():
 # Main function initializes the display of menu
 def main():
     # Connect to MySQL database
+    load_dotenv() # Load .env file
     try:
+        DB_HOST = os.getenv("DB_HOST")
+        DB_USERNAME = os.getenv("DB_USERNAME")
+        DB_PASSWORD = os.getenv("DB_PASSWORD")
         connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="admin123"
+            host=DB_HOST,
+            user=DB_USERNAME,
+            password=DB_PASSWORD
         )
 
         # Execute SQL file
@@ -261,8 +268,9 @@ def main():
                     # Create User 
                     if sub_choice == '1':
                         # Insert necessary input parameter statement here...
-                        
-                        user.create_user(connection)
+                        user_username = input("Input username: ")
+                        user_password = input("Input password: ")
+                        user.create_user(connection, user_username, user_password)
                         
                     # Read All Users
                     elif sub_choice == '2':
@@ -272,21 +280,24 @@ def main():
                         
                     # Read Certain User
                     elif sub_choice == '3':
+                        user_username = input("Input username of the user to be read: ")
                         # Insert necessary input parameter statement here...
                         
-                        user.read_certain_user(connection)
+                        user.read_certain_user(connection, user_username)
                         
                     # Update User
                     elif sub_choice == '4':
                         # Insert necessary input parameter statement here...
-                        
-                        user.update_user(connection)
+                        input_attribute = input("Input attribute to be changed: ")
+                        user_username = input("Input username of the user to be updated: ")
+                        input_username = input(f"Input new {input_attribute} value of {user_username}: ")
+                        user.update_user(connection, input_attribute, user_username, input_username)
                         
                     # Delete User
                     elif sub_choice == '5':
                         # Insert necessary input parameter statement here...
-                        
-                        user.delete_user(connection)
+                        user_username = input("Input username of the user to be deleted: ")
+                        user.delete_user(connection, user_username)
                     
                     # Break    
                     elif sub_choice == '6':
@@ -382,8 +393,9 @@ def main():
                 print("Invalid option. Please select again.")
     
     except mysql.connector.Error as err:
-        print("Error:", err)
-
+        print("Error:", str(err))
+        if err.errno == errorcode.CR_AUTH_PLUGIN_CANNOT_LOAD or err.errno == 1045: 
+            print("Ensure you are using valid credentials.")
     finally:
         if 'connection' in locals() and connection.is_connected():
             connection.close()

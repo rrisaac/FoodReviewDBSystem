@@ -25,6 +25,37 @@ def read_all_food_items_establishment_foodtype(connection, establishment_name, f
     print(f"\nViewing all food items from \"{establishment_name}\" that belong to food type \"{food_type}\"...")
     # Insert python-sql query logic here
     
+    # Constructing the SQL query
+    query = f"""
+    SELECT * FROM foodItem
+    WHERE (food_type LIKE '%{food_type}%')
+    AND (food_foodestablishmentid = (
+        SELECT establishment_id FROM foodEstablishment
+        WHERE establishment_name = "{establishment_name}"
+    ));
+    """
+        
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query)
+        
+        # Fetching the results
+        results = cursor.fetchall()
+        
+        # If there are instances...
+        if results:
+            print("\n")
+            for row in results:
+                print(row)
+            print("\n")
+        
+        # Else, empty set...
+        else:
+            print(f"\nNo food items found from \"{establishment_name}\" that belong to food type \"{food_type}\".\n")
+    
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food items.\n")
     
     
 # View all reviews made within a month for an establishment

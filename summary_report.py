@@ -59,9 +59,39 @@ def read_all_food_items_establishment_foodtype(connection, establishment_name, f
     
     
 # View all reviews made within a month for an establishment
-def read_all_food_reviews_establishment_month(connection):
-    print("\nViewing all reviews made within a month for an establishment...")
-    # Insert python-sql query logic here
+def read_all_food_reviews_establishment_month(connection, establishment_name, month):
+    print(f"\nViewing all reviews made within {month} for \"{establishment_name}\"...")
+
+    # Constructing the SQL query
+    query = f"""
+    SELECT * FROM foodReview 
+    WHERE review_foodestablishmentid = 
+        (SELECT establishment_id FROM foodEstablishment 
+        WHERE establishment_name = "{establishment_name}") 
+        AND MONTH(review_date) =  MONTH(STR_TO_DATE('{month}', '%M'));
+    """
+        
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query)
+        
+        # Fetching the results
+        results = cursor.fetchall()
+        
+        # If there are instances...
+        if results:
+            print("\n")
+            for row in results:
+                print(row)
+            print("\n")
+        
+        # Else, empty set...
+        else:
+            print(f"\nNo food reviews found from \"{establishment_name}\" during {month}.\n")
+    
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food reviews.\n")
     
 # View all reviews made within a month for an food item
 def read_all_food_reviews_item_month(connection):

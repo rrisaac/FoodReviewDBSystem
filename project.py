@@ -342,17 +342,17 @@ def main():
                         
                     # View all reviews made within a month for an establishment
                     elif sub_choice == '6':
-                        # Insert necessary input parameter statement here...
-                        
+                                                
                         input_establishment_name = input("Input food establishment: ")
                         input_month = input(f"Input month of reviews to search in {input_establishment_name}: ")
                         summary_report.read_all_food_reviews_establishment_month(connection, input_establishment_name, input_month)
                         
                     # View all reviews made within a month for an food item
                     elif sub_choice == '7':
-                        # Insert necessary input parameter statement here...
-                        
-                        summary_report.read_all_food_reviews_establishment_month(connection)
+                                                
+                        input_food_item = input("Input food item: ")
+                        input_month = input(f"Input month of reviews about {input_food_item}: ")
+                        summary_report.read_all_food_reviews_establishment_month(connection, input_food_item, input_month)
                         
                     # View all establishments with a high average rating
                     elif sub_choice == '8':

@@ -68,7 +68,8 @@ def read_all_food_reviews_establishment_month(connection, establishment_name, mo
     WHERE review_foodestablishmentid = 
         (SELECT establishment_id FROM foodEstablishment 
         WHERE establishment_name = "{establishment_name}") 
-        AND MONTH(review_date) =  MONTH(STR_TO_DATE('{month}', '%M'));
+        AND MONTH(review_date) =  MONTH(STR_TO_DATE('{month}', '%M'
+    ));
     """
         
     try:
@@ -94,9 +95,40 @@ def read_all_food_reviews_establishment_month(connection, establishment_name, mo
         print("Failed to fetch food reviews.\n")
     
 # View all reviews made within a month for an food item
-def read_all_food_reviews_item_month(connection):
-    print("\nViewing all reviews made within a month for an food item...")
-    # Insert python-sql query logic here
+def read_all_food_reviews_item_month(connection, food_item, month):
+    print(f"\nViewing all \"{food_item}\" reviews during {month}...")
+    
+    # Constructing the SQL query
+    query = f"""
+    SELECT * FROM foodReview 
+    WHERE review_fooditemid = 
+        (SELECT food_id FROM foodItem 
+        WHERE food_name = "{food_item}") 
+        AND MONTH(review_date) =  MONTH(STR_TO_DATE('{month}', '%M'
+    ));
+    """
+        
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query)
+        
+        # Fetching the results
+        results = cursor.fetchall()
+        
+        # If there are instances...
+        if results:
+            print("\n")
+            for row in results:
+                print(row)
+            print("\n")
+        
+        # Else, empty set...
+        else:
+            print(f"\nNo food reviews about \"{food_item}\" during {month}.\n")
+    
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food reviews.\n")
     
 # View all establishments with a high average rating
 def read_all_food_establishments_highrating(connection):

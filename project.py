@@ -335,9 +335,10 @@ def main():
                         
                     # View all food items from an establishment that belong to a food type
                     elif sub_choice == '5':
-                        # Insert necessary input parameter statement here...
                         
-                        summary_report.read_all_food_items_establishment_foodtype(connection)
+                        input_establishment_name = input("Input food establishment: ")
+                        input_foodtype = input("Input food type to search in {input_establishment_name}: ")
+                        summary_report.read_all_food_items_establishment_foodtype(connection, input_establishment_name, input_foodtype)
                         
                     # View all reviews made within a month for an establishment
                     elif sub_choice == '6':

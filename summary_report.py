@@ -25,6 +25,8 @@ def read_all_food_items_establishment_foodtype(connection):
     print("\nViewing all food items from an establishment that belong to a food type...")
     # Insert python-sql query logic here
     
+    
+    
 # View all reviews made within a month for an establishment
 def read_all_food_reviews_establishment_month(connection):
     print("\nViewing all reviews made within a month for an establishment...")

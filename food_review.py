@@ -27,8 +27,18 @@ def create_food_review(connection, review_type, review_message, review_date, rev
 
 # Read All Food Reviews
 def read_all_food_reviews(connection):
-    print("\nReading all food reviews...")
-    # Insert python-sql query logic here
+    try: 
+        print("\nReading all food reviews...")
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM foodreview;")
+
+        connection.commit()
+        print("Food review read successfully.")
+
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to read Food Reviews.\n")
+
 
 # Read Certain Review/s
 def read_certain_food_review(connection):

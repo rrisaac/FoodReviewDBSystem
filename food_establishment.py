@@ -93,7 +93,7 @@ def delete_food_establishment(connection, establishment_name):
         cursor = connection.cursor()
         cursor.execute("DELETE FROM foodEstablishment WHERE establishment_name = %s;", (establishment_name,))
         if cursor.fetchone() is None:
-            print("\Food Establishment Name '{}' does not exist.\n".format(establishment_name))
+            print("Food Establishment Name '{}' does not exist.\n".format(establishment_name))
             return # Return if food establishment is non-existent.
         connection.commit() 
         

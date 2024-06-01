@@ -226,6 +226,7 @@ def main():
                     sub_choice = input("Select an option: ")
                     
                     if sub_choice == '1':
+
                         review_type = input("Input review type: ")
                         review_message = input("Input review message: ")
                         review_date = input("Input review date (YYYY-MM-DD): ")
@@ -237,15 +238,16 @@ def main():
                     
                     # Read All Food Reviews 
                     elif sub_choice == '2':
-                        # Insert necessary input parameter statement here...
-                        
+                     
                         food_review.read_all_food_reviews(connection)
                         
                     # Read Certain Food Review 
                     elif sub_choice == '3':
-                        # Insert necessary input parameter statement here...
-                        
-                        food_review.read_certain_food_review(connection)
+                        food_name = input("Input food name: ")
+                        establishment_name = input("Input food establishment: ")
+                        user_username = input("Input username: ")
+                        review_date = input("Input review date: ")
+                        food_review.read_certain_food_reviews(connection, food_name, user_username, establishment_name, review_date)
                         
                     # Update Food Review 
                     elif sub_choice == '4':

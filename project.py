@@ -243,23 +243,34 @@ def main():
                         
                     # Read Certain Food Review 
                     elif sub_choice == '3':
-                        food_name = input("Input food name: ")
-                        establishment_name = input("Input food establishment: ")
-                        user_username = input("Input username: ")
-                        review_date = input("Input review date: ")
+                        food_name = input("Input food name (leave blank if none): ")
+                        establishment_name = input("Input food establishment (leave blank if none): ")
+                        user_username = input("Input username (leave blank if none): ")
+                        review_date = input("Input review date (leave blank if none): ")
                         food_review.read_certain_food_reviews(connection, food_name, user_username, establishment_name, review_date)
                         
                     # Update Food Review 
                     elif sub_choice == '4':
                         # Insert necessary input parameter statement here...
-                        
-                        food_review.update_food_review(connection)
+                        food_name = input("Input food name: ")
+                        user_username = input("Input username: ")
+                        establishment_name = input("Input establishment name: ")
+                        review_date = input("Input review date: ")
+                        input_attribute = input("Input attribute to change: ")
+                        input_value = input("Input new value: ") 
+
+
+                        food_review.update_food_review(connection, food_name, user_username, establishment_name, review_date, input_attribute, input_value)
                         
                     # Delete Food Review 
                     elif sub_choice == '5':
                         # Insert necessary input parameter statement here...
-                        
-                        food_review.delete_food_review(connection)
+                        print("Delete Food Review: ")
+                        user_username = input("Enter the username of the user who made the review (leave blank if none): ")
+                        review_date = input("Enter review date (leave blank if none): ")
+                        establishment_name = input("Enter establishment name (leave blank if none): ")
+                        food_name = input("Enter food name (leave blank if none): ")
+                        food_review.delete_food_review(connection, user_username, review_date, establishment_name, food_name)
                     
                     # Break 
                     elif sub_choice == '6':
@@ -302,8 +313,12 @@ def main():
                     # Delete User
                     elif sub_choice == '5':
                         # Insert necessary input parameter statement here...
-                        user_username = input("Input username of the user to be deleted: ")
-                        user.delete_user(connection, user_username)
+                        user_username = input("Input username: ")
+                        review_date = input("Input review date:  ")
+                        establishment_name = input("Input establishment name: ")
+                        food_name = input("Input food name: ")
+
+                        user.delete_user(connection, user_username, review_date, establishment_name, food_name)
                     
                     # Break    
                     elif sub_choice == '6':

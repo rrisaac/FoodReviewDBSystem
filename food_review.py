@@ -91,11 +91,81 @@ def read_certain_food_reviews(connection, food_name, user_username, establishmen
         print("Failed to retreive a certain food review")
 
 # Update Food Review
-def update_food_review(connection):
-    print("\nUpdating food review...")
-    # Insert python-sql query logic here
+def update_food_review(connection, food_name, user_username, establishment_name, review_date, input_attribute, input_value):
+    try:
+        print("\nUpdating food review...")
+        # This checks whether an additional query is needed or not.
+        if food_name and food_name.strip() != "":
+            added_query = """(review_foodestablishmentid = (SELECT establishment_id FROM foodEstablishment WHERE establishment_name = %s)
+            OR review_fooditemid = (SELECT food_id FROM foodItem WHERE food_name = %s))"""
+            params = [input_value, user_username, review_date, 0 if food_name is None else 1, establishment_name, food_name]
+        else:
+            added_query = "(review_foodestablishmentid = (SELECT establishment_id FROM foodEstablishment WHERE establishment_name = %s))"
+            params = [input_value, user_username, review_date, 0 if food_name is None else 1, establishment_name]
+        
+        
+        # Query that takes in a dynamic attribute
+        query = """
+            UPDATE foodReview
+            SET {} = %s
+            WHERE review_userid = (SELECT user_id FROM user WHERE user_username = %s)
+            AND review_date = %s
+            AND review_type = %s
+            AND {};
+        """.format(input_attribute, added_query) # Format according to the dynamic attribute and the additional query
+
+        cursor = connection.cursor()
+        cursor.execute(query, tuple(params))
+        
+        # Error handling to check if an update happened:
+        if cursor.rowcount == 0:
+            print("No rows were affected.")
+            connection.commit()
+            return
+        
+        connection.commit()
+        print("Food review updated successfully.")
+    
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Unable to update food review")
+
 
 # Delete Food Review 
-def delete_food_review(connection):
-    print("\nDeleting food review...")
-    # Insert python-sql query logic here
+def delete_food_review(connection, user_username, review_date, establishment_name, food_name):
+    try:
+        print("\nDeleting food review...")
+        query = "DELETE FROM foodreview WHERE 1=1"
+        params = [user_username, review_date, establishment_name, food_name]
+        params_query = [
+            "review_userid = (SELECT user_id FROM user WHERE user_username = %s)",
+            "review_date = (SELECT review_date from foodreview WHERE review_date = %s)",
+            "review_foodestablishmentid = (SELECT establishment_id from foodestablishment WHERE establishment_name = %s)",
+            "review_fooditemid = (SELECT food_id from fooditem WHERE food_name = %s)",
+        ]
+        placeholder = params.copy()
+        # This adds parameters in the query
+        for x  in range(0,(len(params))):
+            if params[x] is not None and params[x] != "":
+                query += " AND {} ".format(params_query[x])
+            else:
+                # Remove params if it is empty
+                placeholder.remove(params[x])
+
+        query = query[:-1]
+        query += ";"
+        params = placeholder # Replace the old params with the updated params
+        cursor = connection.cursor()
+        print(query)
+        cursor.execute(query, params)
+        if cursor.rowcount == 0:
+            print("No deletions occurred.")
+            connection.commit()
+            return
+
+        connection.commit()
+        print("Food review deleted successfully.")
+    
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to delete food review")

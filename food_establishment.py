@@ -68,7 +68,11 @@ def update_food_establishment(connection, input_attribute, input_value, establis
         
         # Fetch the old value before updating
         cursor.execute("SELECT {} FROM foodEstablishment WHERE establishment_name = %s;".format(input_attribute), (establishment_name,))
-        old_value = cursor.fetchone()[0]
+        if cursor.fetchone() is None:
+            print("\Food Establishment Name '{}' does not exist.\n".format(establishment_name))
+            return # Return if food establishment is non-existent.
+        
+        old_value = cursor.fetchone()[0] # If old_value exists, proceed the subscript and gets the old_value
         
         # Perform the update
         query = "UPDATE foodEstablishment SET {} = %s WHERE establishment_name = %s;".format(input_attribute)
@@ -88,6 +92,9 @@ def delete_food_establishment(connection, establishment_name):
     try:
         cursor = connection.cursor()
         cursor.execute("DELETE FROM foodEstablishment WHERE establishment_name = %s;", (establishment_name,))
+        if cursor.fetchone() is None:
+            print("\Food Establishment Name '{}' does not exist.\n".format(establishment_name))
+            return # Return if food establishment is non-existent.
         connection.commit() 
         
         print("\nFood Establishment '{}' deleted successfully!\n".format(establishment_name))

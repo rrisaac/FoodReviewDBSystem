@@ -21,8 +21,8 @@ def read_all_food_items_establishment(connection):
     # Insert python-sql query logic here
     
 # View all food items from an establishment that belong to a food type
-def read_all_food_items_establishment_foodtype(connection):
-    print("\nViewing all food items from an establishment that belong to a food type...")
+def read_all_food_items_establishment_foodtype(connection, establishment_name, food_type):
+    print(f"\nViewing all food items from \"{establishment_name}\" that belong to food type \"{food_type}\"...")
     # Insert python-sql query logic here
     
     

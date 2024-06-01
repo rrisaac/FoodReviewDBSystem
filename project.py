@@ -337,8 +337,8 @@ def main():
                     elif sub_choice == '5':
                         
                         input_establishment_name = input("Input food establishment: ")
-                        input_foodtype = input("Input food type to search in {input_establishment_name}: ")
-                        summary_report.read_all_food_items_establishment_foodtype(connection, input_establishment_name, input_foodtype)
+                        input_food_type = input(f"Input food type to search in {input_establishment_name}: ")
+                        summary_report.read_all_food_items_establishment_foodtype(connection, input_establishment_name, input_food_type)
                         
                     # View all reviews made within a month for an establishment
                     elif sub_choice == '6':

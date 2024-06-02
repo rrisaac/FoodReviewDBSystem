@@ -21,19 +21,114 @@ def read_all_food_items_establishment(connection):
     # Insert python-sql query logic here
     
 # View all food items from an establishment that belong to a food type
-def read_all_food_items_establishment_foodtype(connection):
-    print("\nViewing all food items from an establishment that belong to a food type...")
+def read_all_food_items_establishment_foodtype(connection, establishment_name, food_type):
+    print(f"\nViewing all food items from \"{establishment_name}\" that belong to food type \"{food_type}\"...")
     # Insert python-sql query logic here
+    
+    # Constructing the SQL query
+    query = f"""
+    SELECT * FROM foodItem
+    WHERE (food_type LIKE '%{food_type}%')
+    AND (food_foodestablishmentid = (
+        SELECT establishment_id FROM foodEstablishment
+        WHERE establishment_name = "{establishment_name}"
+    ));
+    """
+        
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query)
+        
+        # Fetching the results
+        results = cursor.fetchall()
+        
+        # If there are instances...
+        if results:
+            print("\n")
+            for row in results:
+                print(row)
+            print("\n")
+        
+        # Else, empty set...
+        else:
+            print(f"\nNo food items found from \"{establishment_name}\" that belong to food type \"{food_type}\".\n")
+    
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food items.\n")
+    
     
 # View all reviews made within a month for an establishment
-def read_all_food_reviews_establishment_month(connection):
-    print("\nViewing all reviews made within a month for an establishment...")
-    # Insert python-sql query logic here
+def read_all_food_reviews_establishment_month(connection, establishment_name, month):
+    print(f"\nViewing all reviews made within {month} for \"{establishment_name}\"...")
+
+    # Constructing the SQL query
+    query = f"""
+    SELECT * FROM foodReview 
+    WHERE review_foodestablishmentid = 
+        (SELECT establishment_id FROM foodEstablishment 
+        WHERE establishment_name = "{establishment_name}") 
+        AND MONTH(review_date) =  MONTH(STR_TO_DATE('{month}', '%M'
+    ));
+    """
+        
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query)
+        
+        # Fetching the results
+        results = cursor.fetchall()
+        
+        # If there are instances...
+        if results:
+            print("\n")
+            for row in results:
+                print(row)
+            print("\n")
+        
+        # Else, empty set...
+        else:
+            print(f"\nNo food reviews found from \"{establishment_name}\" during {month}.\n")
+    
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food reviews.\n")
     
 # View all reviews made within a month for an food item
-def read_all_food_reviews_item_month(connection):
-    print("\nViewing all reviews made within a month for an food item...")
-    # Insert python-sql query logic here
+def read_all_food_reviews_item_month(connection, food_item, month):
+    print(f"\nViewing all \"{food_item}\" reviews during {month}...")
+    
+    # Constructing the SQL query
+    query = f"""
+    SELECT * FROM foodReview 
+    WHERE review_fooditemid = 
+        (SELECT food_id FROM foodItem 
+        WHERE food_name = "{food_item}") 
+        AND MONTH(review_date) =  MONTH(STR_TO_DATE('{month}', '%M'
+    ));
+    """
+        
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query)
+        
+        # Fetching the results
+        results = cursor.fetchall()
+        
+        # If there are instances...
+        if results:
+            print("\n")
+            for row in results:
+                print(row)
+            print("\n")
+        
+        # Else, empty set...
+        else:
+            print(f"\nNo food reviews about \"{food_item}\" during {month}.\n")
+    
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food reviews.\n")
     
 # View all establishments with a high average rating
 def read_all_food_establishments_highrating(connection):

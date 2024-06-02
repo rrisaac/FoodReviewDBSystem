@@ -3,17 +3,62 @@ import mysql.connector
 # View all food establishments
 def read_all_food_establishments(connection):
     print("\nViewing all food establishments...")
-    # Insert python-sql query logic here
+try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM foodEstablishment;")
+        establishments = cursor.fetchall()
+
+        if establishments:
+            print("\n")
+            for establishment in establishments:
+                print(establishment)
+            print("\n")
+        else:
+            print("\nNo food establishments found.\n")
+
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food establishments.\n")
     
 # View all food reviews for an establishment
 def read_all_food_reviews_establishment(connection):
     print("\nViewing all food reviews for an establishment...")
-    # Insert python-sql query logic here
+    try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM foodReview WHERE review_foodestablishmentid = %s;", (establishment_id,))
+        reviews = cursor.fetchall()
+
+        if reviews:
+            print("\n")
+            for review in reviews:
+                print(review)
+            print("\n")
+        else:
+            print("\nNo food reviews found for this establishment.\n")
+
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food reviews.\n"
     
 # View all food reviews for a food item
 def read_all_food_reviews_item(connection):
     print("\nViewing all food reviews for a food item...")
-    # Insert python-sql query logic here
+  try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM foodReview WHERE review_fooditemid = %s;", (food_item_id,))
+        reviews = cursor.fetchall()
+
+        if reviews:
+            print("\n")
+            for review in reviews:
+                print(review)
+            print("\n")
+        else:
+            print("\nNo food reviews found for this food item.\n")
+
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food reviews.\n")
     
 # View all food items from an establishment 
 def read_all_food_items_establishment(connection):

@@ -19,9 +19,9 @@ def read_all_food_establishments(connection):
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch food establishments.\n")
-    
+
 # View all food reviews for an establishment
-def read_all_food_reviews_establishment(connection):
+def read_all_food_reviews_establishment(connection, establishment_id):
     print("\nViewing all food reviews for an establishment...")
     try:
         cursor = connection.cursor()
@@ -39,6 +39,48 @@ def read_all_food_reviews_establishment(connection):
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch food reviews.\n")
+
+# View all food reviews for a food item
+def read_all_food_reviews_item(connection, food_item_name):
+    print("\nViewing all food reviews for a food item...")
+    try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM foodReview WHERE review_fooditemid = (SELECT food_id FROM foodItem WHERE item_name = %s);", (food_item_name,))
+        reviews = cursor.fetchall()
+
+        if reviews:
+            print("\n")
+            for review in reviews:
+                print(review)
+            print("\n")
+        else:
+            print("\nNo food reviews found for this food item.\n")
+
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food reviews.\n")
+
+# View all food items from an establishment 
+def read_all_food_items_establishment(connection, establishment_id):
+    print("\nViewing all food items from an establishment...")
+    try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM foodItem WHERE establishment_id = %s;", (establishment_id,))
+        items = cursor.fetchall()
+
+        if items:
+            print("\n")
+            for item in items:
+                print(item)
+            print("\n")
+        else:
+            print("\nNo food items found for this establishment.\n")
+
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food items.\n")
+
+
     
 # View all food reviews for a food item
 def read_all_food_reviews_item(connection, food_item_id):

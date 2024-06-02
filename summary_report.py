@@ -3,7 +3,22 @@ import mysql.connector
 # View all food establishments
 def read_all_food_establishments(connection):
     print("\nViewing all food establishments...")
-    # Insert python-sql query logic here
+try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM foodEstablishment;")
+        establishments = cursor.fetchall()
+
+        if establishments:
+            print("\n")
+            for establishment in establishments:
+                print(establishment)
+            print("\n")
+        else:
+            print("\nNo food establishments found.\n")
+
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food establishments.\n")
     
 # View all food reviews for an establishment
 def read_all_food_reviews_establishment(connection):

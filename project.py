@@ -384,26 +384,34 @@ def main():
                     # View all food items from an establishment arranged according to price
                     elif sub_choice == '9':
                         # Insert necessary input parameter statement here...
+                        establishment_name = input("Input establishment name: ")
                         
-                        summary_report.read_all_food_items_establishment_orderprice(connection)
+                        summary_report.read_all_food_items_establishment_orderprice(connection, establishment_name)
                         
                     # Search food items from any establishment based on a given price range
                     elif sub_choice == '10':
                         # Insert necessary input parameter statement here...
+                        establishment_name = input("Input establishment name: ")
+                        min_price = input("Input minimum price: ")
+                        max_price = input("Input maximum price: ")
                         
-                        summary_report.read_all_food_items_any_establishment_pricerange(connection)
+                        summary_report.read_all_food_items_any_establishment_pricerange(connection, establishment_name, min_price, max_price)
                         
                     # Search food items from establishment based on a given food type
                     elif sub_choice == '11':
                         # Insert necessary input parameter statement here...
-                        
-                        summary_report.read_all_food_items_any_establishment_foodtype(connection)
+                        establishment_name = input("Input establishment name: ")
+                        food_type = input("Input food type: ")
+                        summary_report.read_all_food_items_any_establishment_foodtype(connection, establishment_name, food_type)
                         
                     # Search food items from any establishment based on a given price range AND food type
                     elif sub_choice == '12':
                         # Insert necessary input parameter statement here...
-                        
-                        summary_report.read_all_food_items_any_establishment_pricerange_foodtype(connection)
+                        establishment_name = input("Input establishment name: ")
+                        min_price = input("Input minimum price: ")
+                        max_price = input("Input maximum price: ")
+                        food_type = input("Input food type: ")
+                        summary_report.read_all_food_items_any_establishment_pricerange_foodtype(connection, establishment_name, min_price, max_price, food_type)
                         
                     # Break 
                     elif sub_choice == '13':

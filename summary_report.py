@@ -132,25 +132,96 @@ def read_all_food_reviews_item_month(connection, food_item, month):
     
 # View all establishments with a high average rating
 def read_all_food_establishments_highrating(connection):
-    print("\nViewing all establishments with a high average rating...")
+    try:
+        query = "SELECT * FROM foodestablishment WHERE establishment_averagerating >= 4;"
+        cursor = connection.cursor()
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        if results:
+            for result in results:
+                print(result, "\n")
+        else:
+            print("There are currently no food establishments with a high (>=4) average rating") 
+       
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food establishments.")
+
     # Insert python-sql query logic here
     
 # View all food items from an establishment arranged according to price
-def read_all_food_items_establishment_orderprice(connection):
-    print("\nViewing all food items from an establishment arranged according to price...")
+def read_all_food_items_establishment_orderprice(connection, establishment_name):
+    try:
+        print("\nViewing all food items from an establishment arranged according to price...")
+        query = "SELECT * FROM fooditem WHERE food_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = %s) ORDER BY food_price;"
+        cursor = connection.cursor()
+        cursor.execute(query,(establishment_name,))
+        results = cursor.fetchall()
+
+        if results:
+            for result in results:
+                print("\n", result)
+        else:
+            print(f"There are currently no food items in the specified establishment '{establishment_name}'")
+            
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food items from an establishment according to food price.")
     # Insert python-sql query logic here
     
 # Search food items from any establishment based on a given price range
-def read_all_food_items_any_establishment_pricerange(connection):
-    print("\nSearching food items from any establishment based on a given price range...")
+def read_all_food_items_any_establishment_pricerange(connection, establishment_name, min_price, max_price):
+    try:
+        print("\nSearching food items from any establishment based on a given price range...")
+        query = "SELECT * FROM fooditem WHERE food_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = %s) AND (food_price BETWEEN %s AND %s);"
+        cursor = connection.cursor()
+        cursor.execute(query, (establishment_name, min_price, max_price))
+        results = cursor.fetchall()
+        if results:
+            for result in results:
+                print("\n", result)
+        else:
+            print(f"Failed to fetch food items from an establishment '{establishment_name}' from food price {min_price} to {max_price}.")
+
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print(f"Failed to retrieve any food items in establishment {establishment_name} with specified food price {min_price} to {max_price}")
     # Insert python-sql query logic here
     
 # Search food items from establishment based on a given food type
-def read_all_food_items_any_establishment_foodtype(connection):
-    print("\nSearching food items from establishment based on a given food type...")
-    # Insert python-sql query logic here
+def read_all_food_items_any_establishment_foodtype(connection, establishment_name, food_type):
+    try:
+        print("\nSearching food items from establishment based on a given food type...")
+        query = f"SELECT * FROM fooditem WHERE food_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = %s) AND (food_type LIKE '%{food_type}%');"
+        cursor = connection.cursor()
+        cursor.execute(query, (establishment_name,))
+        results = cursor.fetchall()
+        if results:
+            for result in results:
+                print("\n", result)
+        else:
+            print(f"Failed to fetch food items from an establishment '{establishment_name}' with food type {food_type}")
+
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print(f"Failed to retrieve any food items in establishment {establishment_name} with specified food type {food_type}")
     
 # Search food items from any establishment based on a given price range AND food type
-def read_all_food_items_any_establishment_pricerange_foodtype(connection):
-    print("\nSearching food items from any establishment based on a given price range AND food type...")
+def read_all_food_items_any_establishment_pricerange_foodtype(connection, establishment_name, min_price, max_price, food_type):
+    try:
+        print("\nSearching food items from any establishment based on a given price range AND food type...")
+        query = f"SELECT * FROM fooditem WHERE food_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = %s) AND (food_price BETWEEN %s AND %s) AND (food_type LIKE '%{food_type}%');"
+        cursor = connection.cursor()
+        cursor.execute(query, (establishment_name, min_price, max_price))
+        results = cursor.fetchall()
+        if results:
+            for result in results:
+                print("\n", result)
+        else:
+            print(f"Failed to fetch food items from an establishment '{establishment_name}' from food price {min_price} to {max_price} with food type {food_type}.")
+
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print(f"Failed to retrieve any food items in establishment {establishment_name} with specified food price {min_price} to {max_price} with food type {food_type}")
     # Insert python-sql query logic here

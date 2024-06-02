@@ -339,20 +339,22 @@ def main():
                     # View all food reviews for an establishment
                     elif sub_choice == '2':
                         # Insert necessary input parameter statement here...
-                        
-                        summary_report.read_all_food_reviews_establishment(connection)
+                        establishment_name = input("Input establishment name: ")
+                        summary_report.read_all_food_reviews_establishment(connection, establishment_name)
                         
                     # View all food reviews for a food item
                     elif sub_choice == '3':
                         # Insert necessary input parameter statement here...
                         
-                        summary_report.read_all_food_reviews_item(connection)
+                        food_name = input("Input food name: ")
+                        summary_report.read_all_food_reviews_item(connection, food_name)
                         
                     # View all food items from an establishment  
                     elif sub_choice == '4':
                         # Insert necessary input parameter statement here...
                         
-                        summary_report.read_all_food_establishments(connection)
+                        establishment_name = input("Input establishment name: ")
+                        summary_report.read_all_food_items_establishment(connection, establishment_name)
                         
                     # View all food items from an establishment that belong to a food type
                     elif sub_choice == '5':

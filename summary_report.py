@@ -25,7 +25,7 @@ def read_all_food_reviews_establishment(connection, establishment_name):
     print("\nViewing all food reviews for an establishment...")
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM foodReview WHERE review_foodestablishmentid = %s;", (establishment_id,))
+        cursor.execute("SELECT * FROM foodReview WHERE review_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = %s);", (establishment_name,))
         reviews = cursor.fetchall()
 
         if reviews:
@@ -65,7 +65,7 @@ def read_all_food_items_establishment(connection, establishment_name):
     print("\nViewing all food items from an establishment...")
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM foodItem WHERE establishment_id = %s;", (establishment_id,))
+        cursor.execute("SELECT * FROM foodItem WHERE food_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = %s);", (establishment_name,))
         items = cursor.fetchall()
 
         if items:
@@ -83,11 +83,11 @@ def read_all_food_items_establishment(connection, establishment_name):
 
     
 # View all food reviews for a food item
-def read_all_food_reviews_item(connection, food_item_id):
+def read_all_food_reviews_item(connection, food_name):
     print("\nViewing all food reviews for a food item...")
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM foodReview WHERE review_fooditemid = %s;", (food_item_id,))
+        cursor.execute("SELECT * FROM foodReview WHERE review_fooditemid = (SELECT food_id FROM fooditem WHERE food_name = %s);", (food_name,))
         reviews = cursor.fetchall()
 
         if reviews:
@@ -101,11 +101,6 @@ def read_all_food_reviews_item(connection, food_item_id):
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch food reviews.\n")
-    
-# View all food items from an establishment 
-def read_all_food_items_establishment(connection):
-    print("\nViewing all food items from an establishment...")
-    # Insert python-sql query logic here
     
 # View all food items from an establishment that belong to a food type
 def read_all_food_items_establishment_foodtype(connection, establishment_name, food_type):

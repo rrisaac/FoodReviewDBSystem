@@ -21,7 +21,7 @@ def read_all_food_establishments(connection):
         print("Failed to fetch food establishments.\n")
 
 # View all food reviews for an establishment
-def read_all_food_reviews_establishment(connection, establishment_id):
+def read_all_food_reviews_establishment(connection, establishment_name):
     print("\nViewing all food reviews for an establishment...")
     try:
         cursor = connection.cursor()
@@ -61,7 +61,7 @@ def read_all_food_reviews_item(connection, food_item_name):
         print("Failed to fetch food reviews.\n")
 
 # View all food items from an establishment 
-def read_all_food_items_establishment(connection, establishment_id):
+def read_all_food_items_establishment(connection, establishment_name):
     print("\nViewing all food items from an establishment...")
     try:
         cursor = connection.cursor()

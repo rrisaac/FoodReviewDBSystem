@@ -3,7 +3,7 @@ import mysql.connector
 # View all food establishments
 def read_all_food_establishments(connection):
     print("\nViewing all food establishments...")
-try:
+    try:
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM foodEstablishment;")
         establishments = cursor.fetchall()
@@ -38,12 +38,12 @@ def read_all_food_reviews_establishment(connection):
 
     except mysql.connector.Error as err:
         print("\nError:", err)
-        print("Failed to fetch food reviews.\n"
+        print("Failed to fetch food reviews.\n")
     
 # View all food reviews for a food item
-def read_all_food_reviews_item(connection):
+def read_all_food_reviews_item(connection, food_item_id):
     print("\nViewing all food reviews for a food item...")
-  try:
+    try:
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM foodReview WHERE review_fooditemid = %s;", (food_item_id,))
         reviews = cursor.fetchall()
@@ -148,11 +148,11 @@ def read_all_food_reviews_item_month(connection, food_item, month):
     SELECT * FROM foodReview 
     WHERE review_fooditemid = 
         (SELECT food_id FROM foodItem 
-        WHERE food_name = "{food_item}") 
+        WHERE food_name = '{food_item}') 
         AND MONTH(review_date) =  MONTH(STR_TO_DATE('{month}', '%M'
     ));
     """
-        
+
     try:
         cursor = connection.cursor()
         cursor.execute(query)

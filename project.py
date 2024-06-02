@@ -373,7 +373,7 @@ def main():
                                                 
                         input_food_item = input("Input food item: ")
                         input_month = input(f"Input month of reviews about {input_food_item}: ")
-                        summary_report.read_all_food_reviews_establishment_month(connection, input_food_item, input_month)
+                        summary_report.read_all_food_reviews_item_month(connection, input_food_item, input_month)
                         
                     # View all establishments with a high average rating
                     elif sub_choice == '8':

@@ -23,7 +23,22 @@ try:
 # View all food reviews for an establishment
 def read_all_food_reviews_establishment(connection):
     print("\nViewing all food reviews for an establishment...")
-    # Insert python-sql query logic here
+    try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM foodReview WHERE review_foodestablishmentid = %s;", (establishment_id,))
+        reviews = cursor.fetchall()
+
+        if reviews:
+            print("\n")
+            for review in reviews:
+                print(review)
+            print("\n")
+        else:
+            print("\nNo food reviews found for this establishment.\n")
+
+    except mysql.connector.Error as err:
+        print("\nError:", err)
+        print("Failed to fetch food reviews.\n"
     
 # View all food reviews for a food item
 def read_all_food_reviews_item(connection):

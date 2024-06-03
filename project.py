@@ -223,6 +223,7 @@ def main():
                         input_establishment_name = input("Input establishment name to change: ")
                         input_attribute = input("Input attribute of "+ input_establishment_name +" to be updated: ")
                         input_value = input("Input new "+ input_attribute +" value of " + input_establishment_name +": ")
+                        # validate 
                         food_establishment.update_food_establishment(connection, input_attribute, input_value, input_establishment_name)
                     
                     # Delete Food Establishment 
@@ -248,6 +249,8 @@ def main():
                         food_name = input("Input food name: ")
                         food_type = input("Insert food type: (if possible, separate types through commas ','): ")
                         price = float(input("Input price: "))
+                        # proper float formatter
+                        # validate  
                         food_item.create_food_item(connection, establishment_name, food_name, food_type, price)
                         
                     # Read All Food Items

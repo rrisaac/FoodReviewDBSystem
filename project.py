@@ -285,8 +285,8 @@ def main():
                         review_message = input("Input review message: ")
                         review_date = input("Input review date (YYYY-MM-DD): ")
                         review_rating = input("Input review rating (1.00-5): ")
-                        food_name = input("Input food name: ")
                         establishment_name = input("Input establishment name: ")
+                        food_name = input("Input food name: ")
                         user_username = input("Input user username: ")
                         food_review.create_food_review(connection, review_message, review_date, review_rating, food_name, establishment_name, user_username)
                     

@@ -16,6 +16,8 @@ def execute_sql_file(filename, connection):
         for command in sql_commands:
             if command.strip() != '':
                 cursor.execute(command)
+        
+        update_average_rating(connection)
         connection.commit()
 
 # This function displays the menu in a given format 
@@ -42,7 +44,8 @@ def display_main_menu():
         "Food Review CRUD",
         "User CRUD",
         "Summary Reports",
-        "Exit"
+        "Update Average Rating",
+        "Exit",
     ]
     display_menu(menu_title, menu_items)
 
@@ -118,6 +121,51 @@ def display_summary_reports_menu():
         "Back"
     ]
     display_menu(menu_title, menu_items)
+
+def update_average_rating(connection):
+    try:
+        cursor = connection.cursor()
+
+        # Calculate average rating for each establishment
+        cursor.execute("""
+            SELECT review_foodestablishmentid, AVG(review_rating) AS avg_rating
+            FROM foodReview
+            WHERE review_type = 0
+            GROUP BY review_foodestablishmentid
+        """)
+        establishment_ratings = cursor.fetchall()
+
+        # Update average rating for each establishment
+        for establishment_id, avg_rating in establishment_ratings:
+            cursor.execute("""
+                UPDATE foodEstablishment
+                SET establishment_averagerating = %s
+                WHERE establishment_id = %s
+            """, (avg_rating, establishment_id))
+
+        cursor.execute("""
+            SELECT review_fooditemid, AVG(review_rating) AS avg_rating
+            FROM foodReview
+            WHERE review_type = 1
+            GROUP BY review_fooditemid
+        """)
+        fooditem_ratings = cursor.fetchall()
+
+        # Update average rating for each food item
+        for food_id, avg_rating in fooditem_ratings:
+            cursor.execute("""
+                UPDATE foodItem
+                SET food_averagerating = %s
+                WHERE food_id = %s
+            """, (avg_rating, food_id))
+        connection.commit()
+
+        print("Average ratings updated successfully!")
+
+    except mysql.connector.Error as err:
+        connection.rollback()
+        print("Error updating average ratings:", err)
+
 
 # Main function initializes the display of menu
 def main():
@@ -283,6 +331,7 @@ def main():
                     # Break 
                     elif sub_choice == '6':
                         break
+                    
                     else:
                         print("Invalid option. Please select again.")
             elif choice == '4':
@@ -429,8 +478,12 @@ def main():
                     else:
                         print("Invalid option. Please select again.")
             elif choice == '6':
+                print("Update average rating...")
+                update_average_rating(connection)
+            elif choice == '7':
                 print("Exiting...")
                 break
+            
             else:
                 print("Invalid option. Please select again.")
     

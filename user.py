@@ -71,9 +71,13 @@ def update_user(connection, input_attribute, user_username, input_username):
 
         # First, we validate if the user exists to ensure that we are not updating nothing.
         cursor.execute("SELECT user_username FROM user WHERE user_username = %s;", (user_username,))
-        if cursor.fetchone() is None:
-            print("\nUser '{}' does not exist.\n".format(user_username))
-            return # Return if user is non-existent.
+        old_value_result = cursor.fetchone()
+        
+        if old_value_result is None:
+            print("\nFood item '{}' does not exist.\n".format(user_username))
+            return # Return if food item is non-existent.
+        
+        old_value = old_value_result[0] # If old_value exists, proceed to get the old_value
         
         cursor.execute("UPDATE user SET {} = %s WHERE user_username = %s;".format(
             input_attribute # Attribute to be set

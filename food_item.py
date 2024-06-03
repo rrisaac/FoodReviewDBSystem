@@ -86,16 +86,15 @@ def update_food_item(connection, food_name, input_attribute, input_value):
 
         # First, we validate if the food exists to ensure that we are not updating nothing.
         cursor.execute("SELECT food_name FROM fooditem WHERE food_name = %s;", (food_name,))
-        if cursor.fetchone() is None:
-            print("\nUser '{}' does not exist.\n".format(food_name))
-            return # Return if user is non-existent.
+        old_value_result = cursor.fetchone()
         
-        cursor.execute("UPDATE fooditem SET {} = %s WHERE food_name = %s;".format(
-            input_attribute # Attribute to be set
-        ), (
-        input_value, # Value to be set
-        food_name)) # Food name of the food to be updated
-        project.update_average_rating(connection)
+        if old_value_result is None:
+            print("\nFood item '{}' does not exist.\n".format(food_name))
+            return # Return if food item is non-existent.
+        
+        old_value = old_value_result[0] # If old_value exists, proceed to get the old_value
+        
+        cursor.execute("UPDATE fooditem SET {} = %s WHERE food_name = %s;".format(input_attribute), (input_value, food_name))
         connection.commit() # Ensure that the update is saved
 
         # Print update details:

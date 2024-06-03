@@ -187,8 +187,11 @@ def main():
                     # Create Food Item 
                     if sub_choice == '1':
                         # Insert necessary input parameter statement here...
-                        
-                        food_item.create_food_item(connection)
+                        establishment_name = input("Input establishment name: ")
+                        food_name = input("Input food name: ")
+                        food_type = input("Insert food type: (if possible, separate types through commas ','): ")
+                        price = float(input("Input price: "))
+                        food_item.create_food_item(connection, establishment_name, food_name, food_type, price)
                         
                     # Read All Food Items
                     elif sub_choice == '2':
@@ -200,19 +203,24 @@ def main():
                     elif sub_choice == '3':
                         # Insert necessary input parameter statement here...
                         
-                        food_item.read_certain_food_items(connection)
+                        food_name = input("Input food name: ")
+
+                        food_item.read_certain_food_items(connection, food_name)
                         
                     # Update Food Item
                     elif sub_choice == '4':
                         # Insert necessary input parameter statement here...
-                        
-                        food_item.update_food_item(connection)
+                        food_name = input("Input food name to update: ")
+                        input_attribute = input("Input the attribute you want to change: ")
+                        input_value = input("Input the value you want it to be replaced: ")
+
+                        food_item.update_food_item(connection, food_name, input_attribute, input_value)
                         
                     # Delete Food Item
                     elif sub_choice == '5':
                         # Insert necessary input parameter statement here...
-                        
-                        food_item.delete_food_item(connection)
+                        food_name = input("Input food name: ")
+                        food_item.delete_food_item(connection, food_name)
                         
                     # Break
                     elif sub_choice == '6':

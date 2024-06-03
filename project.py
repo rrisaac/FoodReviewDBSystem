@@ -301,8 +301,19 @@ def main():
                                 continue
                             else:
                                 break
-                    
-                        review_rating = input("Input review rating (1.00-5): ")
+                        while True:
+                            try:
+                                review_rating = float(input("Input review rating (1.00-5.00): "))
+                                if review_rating < 1.00 or review_rating > 5.00:
+                                    print("Rating must be between 1.00 and 5.00")
+                                    continue
+                                else:
+                                    # Format the rating to have two decimal points
+                                    review_rating = "{:.2f}".format(review_rating)
+                                    break
+                            except ValueError:
+                                print("Invalid input. Please enter a valid float value.")
+                                
                         food_name = input("Input food name: ")
                         establishment_name = input("Input establishment name: ")
                         user_username = input("Input user username: ")

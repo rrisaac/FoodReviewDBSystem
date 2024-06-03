@@ -8,6 +8,8 @@ This program delves into the SQL queries that power the CRUD operations within o
 - **CRUD food items to the database.**
 - **CRUD food reviews to the database.**
 - **CRUD food users to the database.**
+- **Show summary reports.**
+- **Update average rating of the establishments and food items.**
 - **Use Python as the programming language to facilitate SQL database management system**
 - **Handle database connection and error management.**
 
@@ -27,21 +29,18 @@ This program delves into the SQL queries that power the CRUD operations within o
     cd FoodEstablishmentDBManager
     ```
 
-2. Install the required Python packages:
+2. Install the required Python packages (or run requirements.txt):
     ```bash
-    pip install mysql-connector-python
+    pip install mysql-connector-python || pip install -r requirements.txt
     ```
 
 ### Configuration
 
-1. Update the database configuration in your script:
-    ```python
-    connection = mysql.connector.connect(
-        host="your_host",
-        user="your_username",
-        password="your_password",
-        database="your_database"
-    )
+1. Update the database configuration in your .env file:
+    ```txt
+    DB_HOST="your_host"
+    DB_USERNAME="your_username"
+    DB_PASSWORD="your_password"
     ```
 
 ### Usage

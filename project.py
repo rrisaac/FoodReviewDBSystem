@@ -158,7 +158,6 @@ def update_average_rating(connection):
                 SET food_averagerating = %s
                 WHERE food_id = %s
             """, (avg_rating, food_id))
-        connection.commit()
 
         print("Average ratings updated successfully!")
 
@@ -283,14 +282,13 @@ def main():
                     
                     if sub_choice == '1':
 
-                        review_type = input("Input review type: ")
                         review_message = input("Input review message: ")
                         review_date = input("Input review date (YYYY-MM-DD): ")
                         review_rating = input("Input review rating (1.00-5): ")
                         food_name = input("Input food name: ")
                         establishment_name = input("Input establishment name: ")
                         user_username = input("Input user username: ")
-                        food_review.create_food_review(connection, review_type, review_message, review_date, review_rating, food_name, establishment_name, user_username)
+                        food_review.create_food_review(connection, review_message, review_date, review_rating, food_name, establishment_name, user_username)
                     
                     # Read All Food Reviews 
                     elif sub_choice == '2':

@@ -1,4 +1,5 @@
 import mysql.connector
+import project
 
 # Create Food Establishment
 def create_food_establishment(connection, establishment_name):
@@ -77,6 +78,7 @@ def update_food_establishment(connection, input_attribute, input_value, establis
         # Perform the update
         query = "UPDATE foodEstablishment SET {} = %s WHERE establishment_name = %s;".format(input_attribute)
         cursor.execute(query, (input_value, establishment_name))
+        project.update_average_rating(connection)
         connection.commit() 
         
         # Print the update details
@@ -95,6 +97,7 @@ def delete_food_establishment(connection, establishment_name):
         if cursor.fetchone() is None:
             print("Food Establishment Name '{}' does not exist.\n".format(establishment_name))
             return # Return if food establishment is non-existent.
+        project.update_average_rating(connection)
         connection.commit() 
         
         print("\nFood Establishment '{}' deleted successfully!\n".format(establishment_name))

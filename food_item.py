@@ -1,4 +1,5 @@
 import mysql.connector
+import project
 
 # Add parameters if necessary.
 # Be verbose: Display all necessary data to explicitly state what's being done. Check food_establishment.py for reference.
@@ -94,7 +95,7 @@ def update_food_item(connection, food_name, input_attribute, input_value):
         ), (
         input_value, # Value to be set
         food_name)) # Food name of the food to be updated
-
+        project.update_average_rating(connection)
         connection.commit() # Ensure that the update is saved
 
         # Print update details:
@@ -110,6 +111,7 @@ def delete_food_item(connection, food_name):
         print("\nDeleting food item...")
         cursor = connection.cursor()
         cursor.execute("DELETE FROM foodItem WHERE food_name = %s;", (food_name,))
+        project.update_average_rating(connection)
         connection.commit()
         
         print("\nFood Item with name {} deleted successfully!\n".format(food_name))

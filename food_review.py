@@ -1,22 +1,45 @@
 import mysql.connector
-
+import project
 # Add parameters if necessary.
 # Be verbose: Display all necessary data to explicitly state what's being done. Check food_establishment.py for reference.
 
 # Create Food Review
-def create_food_review(connection, review_type, review_message, review_date, review_rating, food_name, establishment_name, user_username):
+def create_food_review(connection, review_message, review_date, review_rating, food_name, establishment_name, user_username):
     try:
-        print("\nCreating food review...")
         cursor = connection.cursor()
-        cursor.execute("""
-            INSERT INTO foodReview(review_type, review_message, review_date, review_rating, review_fooditemid, review_foodestablishmentid, review_userid)
+        if establishment_name is None or establishment_name.strip() == "":
+            print("You can't create a food review not associated to an establishment.") # No food and establishment
+            return
+        elif food_name is None or food_name.strip() == "":
+            review_type = 0 # If there is no food
+            query = """
+            INSERT INTO foodReview(review_type, review_message, review_date, review_rating, review_foodestablishmentid, review_userid)
             VALUES (
                 %s, %s, %s, %s,
-                (SELECT food_id FROM foodItem WHERE food_name = %s),
                 (SELECT establishment_id FROM foodEstablishment WHERE establishment_name = %s),
                 (SELECT user_id FROM user WHERE user_username = %s)
-            )
-        """, (review_type, review_message, review_date, review_rating, food_name, establishment_name, user_username))
+            );
+            """
+            params = [review_type, review_message, review_date, review_rating, establishment_name, user_username]
+        else:
+            result = cursor.execute("SELECT food_name FROM foodItem WHERE food_foodestablishmentid = (SELECT establishment_id from foodestablishment WHERE establishment_name = %s);", (establishment_name,))
+            if result is None:
+                print("Please input a food name that is associated to an establishment.")
+                return
+            
+            review_type = 1  # If both food and establishment is specified
+            query = """
+            INSERT INTO foodReview(review_type, review_message, review_date, review_rating, review_fooditemid, review_userid)
+            VALUES (
+                %s, %s, %s, %s,
+                (SELECT food_id from foodItem where food_name = %s),
+                (SELECT user_id FROM user WHERE user_username = %s)
+            );
+            """
+            params = [review_type, review_message, review_date, review_rating, food_name, user_username]
+
+        cursor.execute(query, tuple(params))
+        project.update_average_rating(connection)
         connection.commit()
         print("Food review created successfully.")
     
@@ -125,6 +148,7 @@ def update_food_review(connection, food_name, user_username, establishment_name,
             connection.commit()
             return
         
+        project.update_average_rating(connection)
         connection.commit()
         print("Food review updated successfully.")
     
@@ -145,26 +169,29 @@ def delete_food_review(connection, user_username, review_date, establishment_nam
             "review_foodestablishmentid = (SELECT establishment_id from foodestablishment WHERE establishment_name = %s)",
             "review_fooditemid = (SELECT food_id from fooditem WHERE food_name = %s)",
         ]
+        if((establishment_name != "" and establishment_name is not None) and (food_name != "" and food_name is not None)):
+            params.remove(establishment_name)
+            params_query.pop(2)
         placeholder = params.copy()
+
         # This adds parameters in the query
         for x  in range(0,(len(params))):
             if params[x] is not None and params[x] != "":
-                query += " AND {} ".format(params_query[x])
+                query += " AND {}".format(params_query[x])
             else:
                 # Remove params if it is empty
                 placeholder.remove(params[x])
 
-        query = query[:-1]
-        query += ";"
         params = placeholder # Replace the old params with the updated params
+        query += ";"
         cursor = connection.cursor()
-        print(query)
         cursor.execute(query, params)
         if cursor.rowcount == 0:
             print("No deletions occurred.")
             connection.commit()
             return
 
+        project.update_average_rating(connection)
         connection.commit()
         print("Food review deleted successfully.")
     

@@ -1,4 +1,5 @@
 import mysql.connector
+import project
 
 # Add parameters if necessary.
 # Be verbose: Display all necessary data to explicitly state what's being done. Check food_establishment.py for reference.
@@ -84,6 +85,7 @@ def update_user(connection, input_attribute, user_username, input_username):
         input_username, # Value to be set
         user_username)) # Username of the user to be updated
 
+        project.update_average_rating(connection)
         connection.commit() # Ensure that the update is saved
 
         # Print update details:
@@ -108,6 +110,7 @@ def delete_user(connection, user_username):
         # Delete statement
         cursor.execute("DELETE from user WHERE user_username= %s;", (user_username,))
         rows_affected = cursor.rowcount  # Get the number of rows affected by the delete operation
+        project.update_average_rating(connection)
         connection.commit()
 
         # Status message to show whether user has been deleted successfully.

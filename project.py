@@ -167,7 +167,6 @@ def update_average_rating(connection):
                 SET food_averagerating = %s
                 WHERE food_id = %s
             """, (avg_rating, food_id))
-        connection.commit()
 
         print("Average ratings updated successfully!")
 
@@ -318,11 +317,11 @@ def main():
                             except ValueError:
                                 print("Invalid input. Please enter a valid float value.")
                                 
-                        food_name = input("Input food name: ")
                         establishment_name = input("Input establishment name: ")
+                        food_name = input("Input food name: ")
                         user_username = input("Input user username: ")
-                        food_review.create_food_review(connection, review_type, review_message, review_date, review_rating, food_name, establishment_name, user_username)
-                            
+                        food_review.create_food_review(connection, review_message, review_date, review_rating, food_name, establishment_name, user_username)
+                    
                     # Read All Food Reviews 
                     elif sub_choice == '2':
                      
@@ -330,14 +329,15 @@ def main():
                         
                     # Read Certain Food Review 
                     elif sub_choice == '3':
-                        while True:
                             food_name = input("Input food name (leave blank if none): ")
                             establishment_name = input("Input food establishment (leave blank if none): ")
                             user_username = input("Input username (leave blank if none): ")
                             while True:
                                 review_date = input("Input review date (YYYY-MM-DD): ")
                                 
-                                if not validate_date(review_date):
+                                if review_date.strip() == "" or review_date is None:
+                                    break
+                                elif not validate_date(review_date):
                                     print("Invalid date format. Please enter in YYYY-MM-DD format.")
                                     continue
                                 else:
@@ -347,39 +347,39 @@ def main():
                         
                     # Update Food Review 
                     elif sub_choice == '4':
-                        while True:
                             food_name = input("Input food name: ")
                             user_username = input("Input username: ")
                             establishment_name = input("Input establishment name: ")
                             while True:
                                 review_date = input("Input review date (YYYY-MM-DD): ")
                                 
-                                if not validate_date(review_date):
+                                if review_date.strip() == "" or review_date is None:
+                                    break
+                                elif not validate_date(review_date):
                                     print("Invalid date format. Please enter in YYYY-MM-DD format.")
                                     continue
                                 else:
                                     break
                             input_attribute = input("Input attribute to change: ")
                             input_value = input("Input new value: ")
-                        food_review.update_food_review(connection, food_name, user_username, establishment_name, review_date, input_attribute, input_value)
+                            food_review.update_food_review(connection, food_name, user_username, establishment_name, review_date, input_attribute, input_value)
 
                     # Delete Food Review 
                     elif sub_choice == '5':
-                        while True:
                             user_username = input("Enter the username of the user who made the review (leave blank if none): ")
                             while True:
-                                review_date = input("Input review date (YYYY-MM-DD): ")
+                                review_date = input("Input review date (YYYY-MM-DD; leave blank if none): ")
                                 
-                                if not validate_date(review_date):
+                                if review_date.strip() == "" or review_date is None:
+                                    break
+                                elif not validate_date(review_date):
                                     print("Invalid date format. Please enter in YYYY-MM-DD format.")
                                     continue
                                 else:
                                     break
                             establishment_name = input("Enter establishment name (leave blank if none): ")
                             food_name = input("Enter food name (leave blank if none): ")
-
-                    
-                        food_review.delete_food_review(connection, user_username, review_date, establishment_name, food_name)
+                            food_review.delete_food_review(connection, user_username, review_date, establishment_name, food_name)
 
                     # Break 
                     elif sub_choice == '6':

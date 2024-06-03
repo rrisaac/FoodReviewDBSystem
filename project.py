@@ -16,6 +16,8 @@ def execute_sql_file(filename, connection):
         for command in sql_commands:
             if command.strip() != '':
                 cursor.execute(command)
+        
+        update_average_rating(connection)
         connection.commit()
 
 # This function displays the menu in a given format 
@@ -42,7 +44,8 @@ def display_main_menu():
         "Food Review CRUD",
         "User CRUD",
         "Summary Reports",
-        "Exit"
+        "Update Average Rating",
+        "Exit",
     ]
     display_menu(menu_title, menu_items)
 
@@ -119,6 +122,51 @@ def display_summary_reports_menu():
     ]
     display_menu(menu_title, menu_items)
 
+def update_average_rating(connection):
+    try:
+        cursor = connection.cursor()
+
+        # Calculate average rating for each establishment
+        cursor.execute("""
+            SELECT review_foodestablishmentid, AVG(review_rating) AS avg_rating
+            FROM foodReview
+            WHERE review_type = 0
+            GROUP BY review_foodestablishmentid
+        """)
+        establishment_ratings = cursor.fetchall()
+
+        # Update average rating for each establishment
+        for establishment_id, avg_rating in establishment_ratings:
+            cursor.execute("""
+                UPDATE foodEstablishment
+                SET establishment_averagerating = %s
+                WHERE establishment_id = %s
+            """, (avg_rating, establishment_id))
+
+        cursor.execute("""
+            SELECT review_fooditemid, AVG(review_rating) AS avg_rating
+            FROM foodReview
+            WHERE review_type = 1
+            GROUP BY review_fooditemid
+        """)
+        fooditem_ratings = cursor.fetchall()
+
+        # Update average rating for each food item
+        for food_id, avg_rating in fooditem_ratings:
+            cursor.execute("""
+                UPDATE foodItem
+                SET food_averagerating = %s
+                WHERE food_id = %s
+            """, (avg_rating, food_id))
+        connection.commit()
+
+        print("Average ratings updated successfully!")
+
+    except mysql.connector.Error as err:
+        connection.rollback()
+        print("Error updating average ratings:", err)
+
+
 # Main function initializes the display of menu
 def main():
     # Connect to MySQL database
@@ -187,8 +235,11 @@ def main():
                     # Create Food Item 
                     if sub_choice == '1':
                         # Insert necessary input parameter statement here...
-                        
-                        food_item.create_food_item(connection)
+                        establishment_name = input("Input establishment name: ")
+                        food_name = input("Input food name: ")
+                        food_type = input("Insert food type: (if possible, separate types through commas ','): ")
+                        price = float(input("Input price: "))
+                        food_item.create_food_item(connection, establishment_name, food_name, food_type, price)
                         
                     # Read All Food Items
                     elif sub_choice == '2':
@@ -200,19 +251,24 @@ def main():
                     elif sub_choice == '3':
                         # Insert necessary input parameter statement here...
                         
-                        food_item.read_certain_food_items(connection)
+                        food_name = input("Input food name: ")
+
+                        food_item.read_certain_food_items(connection, food_name)
                         
                     # Update Food Item
                     elif sub_choice == '4':
                         # Insert necessary input parameter statement here...
-                        
-                        food_item.update_food_item(connection)
+                        food_name = input("Input food name to update: ")
+                        input_attribute = input("Input the attribute you want to change: ")
+                        input_value = input("Input the value you want it to be replaced: ")
+
+                        food_item.update_food_item(connection, food_name, input_attribute, input_value)
                         
                     # Delete Food Item
                     elif sub_choice == '5':
                         # Insert necessary input parameter statement here...
-                        
-                        food_item.delete_food_item(connection)
+                        food_name = input("Input food name: ")
+                        food_item.delete_food_item(connection, food_name)
                         
                     # Break
                     elif sub_choice == '6':
@@ -275,6 +331,7 @@ def main():
                     # Break 
                     elif sub_choice == '6':
                         break
+                    
                     else:
                         print("Invalid option. Please select again.")
             elif choice == '4':
@@ -421,8 +478,12 @@ def main():
                     else:
                         print("Invalid option. Please select again.")
             elif choice == '6':
+                print("Update average rating...")
+                update_average_rating(connection)
+            elif choice == '7':
                 print("Exiting...")
                 break
+            
             else:
                 print("Invalid option. Please select again.")
     

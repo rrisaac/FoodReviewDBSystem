@@ -301,6 +301,7 @@ def main():
                                 continue
                             else:
                                 break
+                                
                         while True:
                             try:
                                 review_rating = float(input("Input review rating (1.00-5.00): "))

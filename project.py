@@ -8,6 +8,7 @@ import user
 import food_item
 import food_review
 import summary_report
+import datetime
 
 def execute_sql_file(filename, connection):
     with open(filename, 'r') as sql_file:
@@ -19,6 +20,14 @@ def execute_sql_file(filename, connection):
         
         update_average_rating(connection)
         connection.commit()
+
+# This function validates the date format YYYY-MM-DD
+def validate_date(date_text):
+    try:
+        datetime.datetime.strptime(date_text, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
 
 # This function displays the menu in a given format 
 def display_menu(menu_title, menu_items):
@@ -285,17 +294,35 @@ def main():
                     sub_choice = input("Select an option: ")
                     
                     if sub_choice == '1':
-
                         review_type = input("Input review type: ")
                         review_message = input("Input review message: ")
-                        review_date = input("Input review date (YYYY-MM-DD): ")
-                        # format YYYY-MM-DD validation
-                        review_rating = input("Input review rating (1.00-5): ")
+                        while True:
+                            review_date = input("Input review date (YYYY-MM-DD): ")
+                            
+                            if not validate_date(review_date):
+                                print("Invalid date format. Please enter in YYYY-MM-DD format.")
+                                continue
+                            else:
+                                break
+                                
+                        while True:
+                            try:
+                                review_rating = float(input("Input review rating (1.00-5.00): "))
+                                if review_rating < 1.00 or review_rating > 5.00:
+                                    print("Rating must be between 1.00 and 5.00")
+                                    continue
+                                else:
+                                    # Format the rating to have two decimal points
+                                    review_rating = "{:.2f}".format(review_rating)
+                                    break
+                            except ValueError:
+                                print("Invalid input. Please enter a valid float value.")
+                                
                         food_name = input("Input food name: ")
                         establishment_name = input("Input establishment name: ")
                         user_username = input("Input user username: ")
                         food_review.create_food_review(connection, review_type, review_message, review_date, review_rating, food_name, establishment_name, user_username)
-                    
+                            
                     # Read All Food Reviews 
                     elif sub_choice == '2':
                      
@@ -303,38 +330,57 @@ def main():
                         
                     # Read Certain Food Review 
                     elif sub_choice == '3':
-                        food_name = input("Input food name (leave blank if none): ")
-                        establishment_name = input("Input food establishment (leave blank if none): ")
-                        user_username = input("Input username (leave blank if none): ")
-                        review_date = input("Input review date (leave blank if none): ")
-                        # format YYYY-MM-DD validation
-                        food_review.read_certain_food_reviews(connection, food_name, user_username, establishment_name, review_date)
+                        while True:
+                            food_name = input("Input food name (leave blank if none): ")
+                            establishment_name = input("Input food establishment (leave blank if none): ")
+                            user_username = input("Input username (leave blank if none): ")
+                            while True:
+                                review_date = input("Input review date (YYYY-MM-DD): ")
+                                
+                                if not validate_date(review_date):
+                                    print("Invalid date format. Please enter in YYYY-MM-DD format.")
+                                    continue
+                                else:
+                                    break
+        
+                            food_review.read_certain_food_reviews(connection, food_name, user_username, establishment_name, review_date)
                         
                     # Update Food Review 
                     elif sub_choice == '4':
-                        # Insert necessary input parameter statement here...
-                        food_name = input("Input food name: ")
-                        user_username = input("Input username: ")
-                        establishment_name = input("Input establishment name: ")
-                        review_date = input("Input review date (YYYY-MM-DD): ")
-                        # format YYYY-MM-DD validation
-                        input_attribute = input("Input attribute to change: ")
-                        input_value = input("Input new value: ") 
-
-
+                        while True:
+                            food_name = input("Input food name: ")
+                            user_username = input("Input username: ")
+                            establishment_name = input("Input establishment name: ")
+                            while True:
+                                review_date = input("Input review date (YYYY-MM-DD): ")
+                                
+                                if not validate_date(review_date):
+                                    print("Invalid date format. Please enter in YYYY-MM-DD format.")
+                                    continue
+                                else:
+                                    break
+                            input_attribute = input("Input attribute to change: ")
+                            input_value = input("Input new value: ")
                         food_review.update_food_review(connection, food_name, user_username, establishment_name, review_date, input_attribute, input_value)
-                        
+
                     # Delete Food Review 
                     elif sub_choice == '5':
-                        # Insert necessary input parameter statement here...
-                        print("Delete Food Review: ")
-                        user_username = input("Enter the username of the user who made the review (leave blank if none): ")
-                        review_date = input("Enter review date (leave blank if none): ")
-                        # format YYYY-MM-DD validation
-                        establishment_name = input("Enter establishment name (leave blank if none): ")
-                        food_name = input("Enter food name (leave blank if none): ")
-                        food_review.delete_food_review(connection, user_username, review_date, establishment_name, food_name)
+                        while True:
+                            user_username = input("Enter the username of the user who made the review (leave blank if none): ")
+                            while True:
+                                review_date = input("Input review date (YYYY-MM-DD): ")
+                                
+                                if not validate_date(review_date):
+                                    print("Invalid date format. Please enter in YYYY-MM-DD format.")
+                                    continue
+                                else:
+                                    break
+                            establishment_name = input("Enter establishment name (leave blank if none): ")
+                            food_name = input("Enter food name (leave blank if none): ")
+
                     
+                        food_review.delete_food_review(connection, user_username, review_date, establishment_name, food_name)
+
                     # Break 
                     elif sub_choice == '6':
                         break
@@ -376,14 +422,9 @@ def main():
                         
                     # Delete User
                     elif sub_choice == '5':
-                        # Insert necessary input parameter statement here...
                         user_username = input("Input username: ")
-                        review_date = input("Input review date:  ")
-                        establishment_name = input("Input establishment name: ")
-                        food_name = input("Input food name: ")
+                        user.delete_user(connection, user_username)
 
-                        user.delete_user(connection, user_username, review_date, establishment_name, food_name)
-                    
                     # Break    
                     elif sub_choice == '6':
                         break

@@ -97,7 +97,7 @@ def delete_food_establishment(connection, establishment_name):
     try:
         cursor = connection.cursor()
         cursor.execute("DELETE FROM foodEstablishment WHERE establishment_name = %s;", (establishment_name,))
-        if cursor.fetchone() is None:
+        if cursor.rowcount == 0:
             print("Food Establishment Name '{}' does not exist.\n".format(establishment_name))
             return # Return if food establishment is non-existent.
         project.update_average_rating(connection)

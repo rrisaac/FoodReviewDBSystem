@@ -407,20 +407,8 @@ def main():
                         
                     # Delete User
                     elif sub_choice == '5':
-                        while True:
-                            user_username = input("Input username: ")
-                            while True:
-                                review_date = input("Input review date (YYYY-MM-DD): ")
-                                
-                                if not validate_date(review_date):
-                                    print("Invalid date format. Please enter in YYYY-MM-DD format.")
-                                    continue
-                                else:
-                                    break
-                            establishment_name = input("Input establishment name: ")
-                            food_name = input("Input food name: ")
-                    
-                        user.delete_user(connection, user_username, review_date, establishment_name, food_name)
+                        user_username = input("Input username: ")
+                        user.delete_user(connection, user_username)
 
                     # Break    
                     elif sub_choice == '6':

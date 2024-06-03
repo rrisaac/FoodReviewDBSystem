@@ -289,25 +289,26 @@ def main():
                 while True:
                     display_food_review_menu()
                     sub_choice = input("Select an option: ")
-                    
-                    if sub_choice == '1':
+
+                    # Create Food Eeview
+                    elif sub_choice == '1':
                         while True:
                             review_type = input("Input review type: ")
                             review_message = input("Input review message: ")
                             review_date = input("Input review date (YYYY-MM-DD): ")
                             
-                            if not (review_date):
+                            if not validate_date(review_date):
                                 print("Invalid date format. Please enter in YYYY-MM-DD format.")
                                 continue
                             else:
                                 break
-        
-                            review_rating = input("Input review rating (1.00-5): ")
-                            food_name = input("Input food name: ")
-                            establishment_name = input("Input establishment name: ")
-                            user_username = input("Input user username: ")
-                            food_review.create_food_review(connection, review_type, review_message, review_date, review_rating, food_name, establishment_name, user_username)
-                        
+                    
+                        review_rating = input("Input review rating (1.00-5): ")
+                        food_name = input("Input food name: ")
+                        establishment_name = input("Input establishment name: ")
+                        user_username = input("Input user username: ")
+                        food_review.create_food_review(connection, review_type, review_message, review_date, review_rating, food_name, establishment_name, user_username)
+
                     # Read All Food Reviews 
                     elif sub_choice == '2':
                      

@@ -25,7 +25,7 @@ CREATE TABLE foodItem(
     food_id INT AUTO_INCREMENT PRIMARY KEY,
     food_name VARCHAR(30) NOT NULL,
     food_type VARCHAR(255) NOT NULL,
-    food_price DECIMAL(6,2) NOT NULL,
+    food_price DECIMAL(6,2) DEFAULT 0,
     food_averagerating DECIMAL(3,2) DEFAULT 0,
     food_foodestablishmentid INT NOT NULL,
 
@@ -65,28 +65,29 @@ CREATE TABLE foodReview(
 
 -- Dummy values:
 
-INSERT INTO foodEstablishment (establishment_name, establishment_averagerating)
+INSERT INTO foodEstablishment (establishment_name)
 VALUES
-    ('Jollibee Calamba', 1.23),
-    ('Panda Express', 2.45),
-    ('Dairy Queen', 3.67),
-    ('Jollibee Los Banos', 4.89),
-    ('McDonald''s', 0.12),    
-    ('Burger King', 2.76),
-    ('KFC', 4.10),
-    ('Goldilocks', 3.21),
-    ('Wendy''s', 1.98),
-    ('Max''s Restaurant', 0.54),
-    ('Pizza Hut', 3.43),
-    ('Domino''s Pizza', 0.87),
-    ('Dunkin'' Donuts', 4.32),
-    ('Starbucks', 2.10),
-    ('Mang Inasal', 1.65),
-    ('Chowking', 0.98),
-    ('Barrio Fiesta', 4.50),
-    ('Gerry''s Grill', 1.34),
-    ('Red Ribbon', 3.76),
-    ('Kuya J', 5.00);
+    ('Jollibee Calamba'),
+    ('Panda Express'),
+    ('Dairy Queen'),
+    ('Jollibee Los Banos'),
+    ('McDonald''s'),    
+    ('Burger King'),
+    ('KFC'),
+    ('Goldilocks'),
+    ('Wendy''s'),
+    ('Max''s Restaurant'),
+    ('Pizza Hut'),
+    ('Domino''s Pizza'),
+    ('Dunkin'' Donuts'),
+    ('Starbucks'),
+    ('Mang Inasal'),
+    ('Chowking'),
+    ('Barrio Fiesta'),
+    ('Gerry''s Grill'),
+    ('Red Ribbon'),
+    ('Kuya J');
+
 
 INSERT INTO user (user_username, user_password)
 VALUES
@@ -111,28 +112,28 @@ VALUES
     ('MaricarLuna', '********'),
     ('PaoloSantosOnline', 'user');
 
-INSERT INTO foodItem (food_name, food_type, food_price, food_averagerating, food_foodestablishmentid)
+INSERT INTO foodItem (food_name, food_type, food_price, food_foodestablishmentid)
 VALUES
-    ('Cheeseburger', 'Meat,Dairy,Bread', 66.00, 0.45, 5),
-    ('Jolly Spaghetti', 'Meat,Pasta', 60.25, 2.34, 1),
-    ('Pizza', 'Dairy,Bread,Meat,Veg', 472.50, 4.21, 11),
-    ('Halo-Halo', 'Dairy,Fruit,Ice', 82.75, 3.09, 10),
-    ('Blizzard', 'Dairy,Ice', 150.80, 1.87, 3),
-    ('Fried Chicken', 'Meat', 231.55, 4.76, 7),
-    ('Sinigang', 'Meat,Veg', 265.30, 2.10, 10),
-    ('Hamburger', 'Meat,Bread', 146.90, 0.98, 6),
-    ('Palabok', 'Meat,Seafood,Noodles', 72.45, 3.54, 4),
-    ('Chickenjoy', 'Meat', 99.70, 1.23, 4),
-    ('Siopao', 'Meat,Bread', 45.35, 0.32, 16),
-    ('French Fries', 'Veg', 65.55, 4.67, 5),
-    ('Bicol Express', 'Meat,Veg', 294.20, 3.00, 17),
-    ('Lumpiang Shanghai', 'Meat,Veg', 243.85, 2.76, 1),
-    ('Sisig', 'Meat', 152.40, 1.45, 20),
-    ('Pork BBQ', 'Meat', 308.65, 4.32, 15),
-    ('Whopper', 'Meat,Bread,Veg', 200.50, 0.65, 6),
-    ('Dinuguan', 'Meat', 300.75, 3.87, 20),
-    ('Crispy Pata', 'Meat', 655.90, 2.43, 18),
-    ('Cake', 'Dairy,Bread', 785.25, 5.00, 8);
+    ('Cheeseburger', 'Meat,Dairy,Bread', 66.00, 5),
+    ('Jolly Spaghetti', 'Meat,Pasta', 60.25, 1),
+    ('Pizza', 'Dairy,Bread,Meat,Veg', 472.50, 11),
+    ('Halo-Halo', 'Dairy,Fruit,Ice', 82.75, 10),
+    ('Blizzard', 'Dairy,Ice', 150.80, 3),
+    ('Fried Chicken', 'Meat', 231.55, 7),
+    ('Sinigang', 'Meat,Veg', 265.30, 10),
+    ('Hamburger', 'Meat,Bread', 146.90, 6),
+    ('Palabok', 'Meat,Seafood,Noodles', 72.45, 4),
+    ('Chickenjoy', 'Meat', 99.70, 4),
+    ('Siopao', 'Meat,Bread', 45.35, 16),
+    ('French Fries', 'Veg', 65.55, 5),
+    ('Bicol Express', 'Meat,Veg', 294.20, 17),
+    ('Lumpiang Shanghai', 'Meat,Veg', 243.85, 1),
+    ('Sisig', 'Meat', 152.40, 20),
+    ('Pork BBQ', 'Meat', 308.65, 15),
+    ('Whopper', 'Meat,Bread,Veg', 200.50, 6),
+    ('Dinuguan', 'Meat', 300.75, 20),
+    ('Crispy Pata', 'Meat', 655.90, 18),
+    ('Cake', 'Dairy,Bread', 785.25, 8);
 
 INSERT INTO foodReview (review_type, review_message, review_date, review_rating, review_fooditemid, review_foodestablishmentid, review_userid)
 VALUES
@@ -156,3 +157,4 @@ VALUES
     (0, 'Disappointed with the food, didn''t meet expectations.', '2024-04-27', 2.65, NULL, 11, 10),
     (0, 'Good customer service, but the food was mediocre.', '2024-11-08', 1.45, NULL, 4, 2),
     (1, 'Highly satisfied with the quality of the item received.', '2024-08-01', 5.00, 2, NULL, 6);
+

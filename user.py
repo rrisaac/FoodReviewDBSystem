@@ -1,4 +1,5 @@
 import mysql.connector
+import project
 
 # Add parameters if necessary.
 # Be verbose: Display all necessary data to explicitly state what's being done. Check food_establishment.py for reference.
@@ -70,9 +71,13 @@ def update_user(connection, input_attribute, user_username, input_username):
 
         # First, we validate if the user exists to ensure that we are not updating nothing.
         cursor.execute("SELECT user_username FROM user WHERE user_username = %s;", (user_username,))
-        if cursor.fetchone() is None:
-            print("\nUser '{}' does not exist.\n".format(user_username))
-            return # Return if user is non-existent.
+        old_value_result = cursor.fetchone()
+        
+        if old_value_result is None:
+            print("\nFood item '{}' does not exist.\n".format(user_username))
+            return # Return if food item is non-existent.
+        
+        old_value = old_value_result[0] # If old_value exists, proceed to get the old_value
         
         cursor.execute("UPDATE user SET {} = %s WHERE user_username = %s;".format(
             input_attribute # Attribute to be set
@@ -80,6 +85,7 @@ def update_user(connection, input_attribute, user_username, input_username):
         input_username, # Value to be set
         user_username)) # Username of the user to be updated
 
+        project.update_average_rating(connection)
         connection.commit() # Ensure that the update is saved
 
         # Print update details:
@@ -104,6 +110,7 @@ def delete_user(connection, user_username):
         # Delete statement
         cursor.execute("DELETE from user WHERE user_username= %s;", (user_username,))
         rows_affected = cursor.rowcount  # Get the number of rows affected by the delete operation
+        project.update_average_rating(connection)
         connection.commit()
 
         # Status message to show whether user has been deleted successfully.

@@ -10,14 +10,6 @@ import food_review
 import summary_report
 import datetime
 
-# This function validates the date format YYYY-MM-DD
-def (date_text):
-    try:
-        datetime.datetime.strptime(date_text, '%Y-%m-%d')
-        return True
-    except ValueError:
-        return False
-
 def execute_sql_file(filename, connection):
     with open(filename, 'r') as sql_file:
         sql_commands = sql_file.read().split(';')
@@ -28,6 +20,14 @@ def execute_sql_file(filename, connection):
         
         update_average_rating(connection)
         connection.commit()
+
+# This function validates the date format YYYY-MM-DD
+def (date_text):
+    try:
+        datetime.datetime.strptime(date_text, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
 
 # This function displays the menu in a given format 
 def display_menu(menu_title, menu_items):

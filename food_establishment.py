@@ -68,11 +68,14 @@ def update_food_establishment(connection, input_attribute, input_value, establis
         
         # Fetch the old value before updating
         cursor.execute("SELECT {} FROM foodEstablishment WHERE establishment_name = %s;".format(input_attribute), (establishment_name,))
-        if cursor.fetchone() is None:
+                        
+        old_value_result = cursor.fetchone()
+        
+        if old_value_result is None:
             print("Food Establishment Name '{}' does not exist.\n".format(establishment_name))
             return # Return if food establishment is non-existent.
         
-        old_value = cursor.fetchone()[0] # If old_value exists, proceed the subscript and gets the old_value
+        old_value = old_value_result[0] # If old_value exists, proceed the subscript and gets the old_value
         
         # Perform the update
         query = "UPDATE foodEstablishment SET {} = %s WHERE establishment_name = %s;".format(input_attribute)
@@ -80,7 +83,7 @@ def update_food_establishment(connection, input_attribute, input_value, establis
         connection.commit() 
         
         # Print the update details
-        print("\nFood Establishment '{}' '{}' updated from '{}' to '{}' successfully!\n".format(establishment_name, input_attribute, old_value, input_value))
+        # print("\nFood Establishment '{}' '{}' updated from '{}' to '{}' successfully!\n".format(establishment_name, input_attribute, old_value, input_value))
         
     except mysql.connector.Error as err:
         print("\nError:", err)

@@ -214,6 +214,7 @@ def main():
                         input_establishment_name = input("Input establishment name to change: ")
                         input_attribute = input("Input attribute of "+ input_establishment_name +" to be updated: ")
                         input_value = input("Input new "+ input_attribute +" value of " + input_establishment_name +": ")
+                        # validate 
                         food_establishment.update_food_establishment(connection, input_attribute, input_value, input_establishment_name)
                     
                     # Delete Food Establishment 
@@ -239,6 +240,8 @@ def main():
                         food_name = input("Input food name: ")
                         food_type = input("Insert food type: (if possible, separate types through commas ','): ")
                         price = float(input("Input price: "))
+                        # proper float formatter
+                        # validate  
                         food_item.create_food_item(connection, establishment_name, food_name, food_type, price)
                         
                     # Read All Food Items
@@ -286,6 +289,7 @@ def main():
                         review_type = input("Input review type: ")
                         review_message = input("Input review message: ")
                         review_date = input("Input review date (YYYY-MM-DD): ")
+                        # format YYYY-MM-DD validation
                         review_rating = input("Input review rating (1.00-5): ")
                         food_name = input("Input food name: ")
                         establishment_name = input("Input establishment name: ")
@@ -303,6 +307,7 @@ def main():
                         establishment_name = input("Input food establishment (leave blank if none): ")
                         user_username = input("Input username (leave blank if none): ")
                         review_date = input("Input review date (leave blank if none): ")
+                        # format YYYY-MM-DD validation
                         food_review.read_certain_food_reviews(connection, food_name, user_username, establishment_name, review_date)
                         
                     # Update Food Review 
@@ -311,7 +316,8 @@ def main():
                         food_name = input("Input food name: ")
                         user_username = input("Input username: ")
                         establishment_name = input("Input establishment name: ")
-                        review_date = input("Input review date: ")
+                        review_date = input("Input review date (YYYY-MM-DD): ")
+                        # format YYYY-MM-DD validation
                         input_attribute = input("Input attribute to change: ")
                         input_value = input("Input new value: ") 
 
@@ -324,6 +330,7 @@ def main():
                         print("Delete Food Review: ")
                         user_username = input("Enter the username of the user who made the review (leave blank if none): ")
                         review_date = input("Enter review date (leave blank if none): ")
+                        # format YYYY-MM-DD validation
                         establishment_name = input("Enter establishment name (leave blank if none): ")
                         food_name = input("Enter food name (leave blank if none): ")
                         food_review.delete_food_review(connection, user_username, review_date, establishment_name, food_name)

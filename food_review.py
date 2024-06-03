@@ -98,10 +98,10 @@ def update_food_review(connection, food_name, user_username, establishment_name,
         if food_name and food_name.strip() != "":
             added_query = """(review_foodestablishmentid = (SELECT establishment_id FROM foodEstablishment WHERE establishment_name = %s)
             OR review_fooditemid = (SELECT food_id FROM foodItem WHERE food_name = %s))"""
-            params = [input_value, user_username, review_date, 0 if food_name is None else 1, establishment_name, food_name]
+            params = [input_value, user_username, review_date, 1, establishment_name, food_name]
         else:
             added_query = "(review_foodestablishmentid = (SELECT establishment_id FROM foodEstablishment WHERE establishment_name = %s))"
-            params = [input_value, user_username, review_date, 0 if food_name is None else 1, establishment_name]
+            params = [input_value, user_username, review_date, 0, establishment_name]
         
         
         # Query that takes in a dynamic attribute
@@ -114,6 +114,8 @@ def update_food_review(connection, food_name, user_username, establishment_name,
             AND {};
         """.format(input_attribute, added_query) # Format according to the dynamic attribute and the additional query
 
+        print(query)
+        
         cursor = connection.cursor()
         cursor.execute(query, tuple(params))
         

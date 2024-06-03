@@ -83,7 +83,7 @@ def update_food_establishment(connection, input_attribute, input_value, establis
         connection.commit() 
         
         # Print the update details
-        print("\nFood Establishment '{}' '{}' updated from '{}' to '{}' successfully!\n".format(establishment_name, input_attribute, old_value, input_value))
+        # print("\nFood Establishment '{}' '{}' updated from '{}' to '{}' successfully!\n".format(establishment_name, input_attribute, old_value, input_value))
         
     except mysql.connector.Error as err:
         print("\nError:", err)

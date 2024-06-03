@@ -6,6 +6,7 @@ import project
 # Create Food Review
 def create_food_review(connection, review_message, review_date, review_rating, food_name, establishment_name, user_username):
     try:
+        cursor = connection.cursor()
         if establishment_name is None or establishment_name.strip() == "":
             print("You can't create a food review not associated to an establishment.") # No food and establishment
             return
@@ -21,6 +22,11 @@ def create_food_review(connection, review_message, review_date, review_rating, f
             """
             params = [review_type, review_message, review_date, review_rating, establishment_name, user_username]
         else:
+            result = cursor.execute("SELECT food_name FROM foodItem WHERE food_foodestablishmentid = (SELECT establishment_id from foodestablishment WHERE establishment_name = %s);", (establishment_name,))
+            if result is None:
+                print("Please input a food name that is associated to an establishment.")
+                return
+            
             review_type = 1  # If both food and establishment is specified
             query = """
             INSERT INTO foodReview(review_type, review_message, review_date, review_rating, review_fooditemid, review_userid)
@@ -32,7 +38,6 @@ def create_food_review(connection, review_message, review_date, review_rating, f
             """
             params = [review_type, review_message, review_date, review_rating, food_name, user_username]
 
-        cursor = connection.cursor()
         cursor.execute(query, tuple(params))
         project.update_average_rating(connection)
         connection.commit()

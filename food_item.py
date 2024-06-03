@@ -95,6 +95,7 @@ def update_food_item(connection, food_name, input_attribute, input_value):
         old_value = old_value_result[0] # If old_value exists, proceed to get the old_value
         
         cursor.execute("UPDATE fooditem SET {} = %s WHERE food_name = %s;".format(input_attribute), (input_value, food_name))
+        project.update_average_rating(connection)
         connection.commit() # Ensure that the update is saved
 
         # Print update details:

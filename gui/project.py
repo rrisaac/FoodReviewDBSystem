@@ -663,40 +663,162 @@ class App(customtkinter.CTk):
     
     # Summary Report Inputs
     def read_all_food_establishments_input_dialog_event_2(self):
-        print("wait")
+        summary_report.read_all_food_establishments(self.connection)
     
     def read_all_food_reviews_establishment_input_dialog_event(self):
-        print("wait")
-    
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Reviews for an Establishment")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            summary_report.read_all_food_reviews_establishment(self.connection, establishment_name)
+        else:
+            print("Input establishment name input was canceled")
+
     def read_all_food_reviews_item_input_dialog_event(self):
-        print("wait")
-    
+        food_name_dialog = customtkinter.CTkInputDialog(text="Input food name:", title="Read All Food Reviews for a Food Item")
+        food_name = food_name_dialog.get_input()
+        if food_name:
+            summary_report.read_all_food_reviews_item(self.connection, food_name)
+        else:
+            print("Input food name input was canceled")
+
     def read_all_food_items_establishment_input_dialog_event(self):
-        print("wait")
-    
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Items for an Establishment")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            summary_report.read_all_food_items_establishment(self.connection, establishment_name)
+        else:
+            print("Input establishment name input was canceled")
+
     def read_all_food_items_establishment_foodtype_input_dialog_event(self):
-        print("wait")
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Items for an Establishment")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            food_type_dialog = customtkinter.CTkInputDialog(text="Input food type:", title="Read All Food Items for an Establishment")
+            food_type = food_type_dialog.get_input()
+            if food_type:
+                summary_report.read_all_food_items_establishment_foodtype(self.connection, establishment_name, food_type)
+            else:
+                print("Input food type input was canceled")
+        else:
+            print("Input establishment name input was canceled")
+
     
     def read_all_food_reviews_establishment_month_input_dialog_event(self):
-        print("wait")
-    
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Reviews for an Establishment within a Month")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            month_dialog = customtkinter.CTkInputDialog(text="Input month of reviews to search in {}: ".format(establishment_name), title="Read All Food Reviews for an Establishment within a Month")
+            month = month_dialog.get_input()
+            if month:
+                summary_report.read_all_food_reviews_establishment_month(self.connection, establishment_name, month)
+            else:
+                print("Input month input was canceled")
+        else:
+            print("Input establishment name input was canceled")
+
     def read_all_food_reviews_item_month_input_dialog_event(self):
-        print("wait")
+        food_item_dialog = customtkinter.CTkInputDialog(text="Input food item:", title="Read All Food Reviews for a Food Item within a Month")
+        food_item = food_item_dialog.get_input()
+        if food_item:
+            month_dialog = customtkinter.CTkInputDialog(text=f"Input month of reviews about {food_item}: ", title="Read All Food Reviews for a Food Item within a Month")
+            month = month_dialog.get_input()
+            if month:
+                summary_report.read_all_food_reviews_item_month(self.connection, food_item, month)
+            else:
+                print("Input month input was canceled")
+        else:
+            print("Input food item input was canceled")
+
     
     def read_all_food_establishments_highrating_input_dialog_event(self):
-        print("wait")
+        summary_report.read_all_food_establishments_highrating(self.connection)
+
+
     
     def read_all_food_items_establishment_orderprice_input_dialog_event(self):
-        print("wait")
+        dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="View All Food Items from an Establishment Arranged According to Price")
+        establishment_name = dialog.get_input()
+        if establishment_name:
+            summary_report.read_all_food_items_establishment_orderprice(self.connection, establishment_name)
+        else:
+            print("Input establishment name input was canceled")
     
     def read_all_food_items_any_establishment_pricerange_input_dialog_event(self):
-        print("wait")
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Search Food Items from any Establishment based on a given price range")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            min_price_dialog = customtkinter.CTkInputDialog(text="Input minimum price:", title="Search Food Items from any Establishment based on a given price range")
+            min_price = min_price_dialog.get_input()
+            if min_price:
+                max_price_dialog = customtkinter.CTkInputDialog(text="Input maximum price:", title="Search Food Items from any Establishment based on a given price range")
+                max_price = max_price_dialog.get_input()
+                if max_price:
+                    try:
+                        min_price = float(min_price)
+                        max_price = float(max_price)
+                        if min_price > max_price:
+                            print("Minimum price must be less than or equal to maximum price")
+                        elif max_price > 9999.99:
+                            print("Maximum price must be less than or equal to 9999.99")
+                        else:
+                            summary_report.read_all_food_items_any_establishment_pricerange(self.connection, establishment_name, min_price, max_price)
+                    except ValueError:
+                        print("Please enter a valid number for price")
+                else:
+                    print("Input maximum price input was canceled")
+            else:
+                print("Input minimum price input was canceled")
+        else:
+            print("Input establishment name input was canceled")
+
     
     def read_all_food_items_any_establishment_foodtype_input_dialog_event(self):
-        print("wait")
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Search Food Items from establishment based on a given food type")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            food_type_dialog = customtkinter.CTkInputDialog(text="Input food type:", title="Search Food Items from establishment based on a given food type")
+            food_type = food_type_dialog.get_input()
+            if food_type:
+                summary_report.read_all_food_items_any_establishment_foodtype(self.connection, establishment_name, food_type)
+            else:
+                print("Input food type input was canceled")
+        else:
+            print("Input establishment name input was canceled")
     
     def read_all_food_items_any_establishment_pricerange_foodtype_input_dialog_event(self):
-        print("wait")
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Search Food Items from any Establishment based on a given price range AND food type")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            min_price_dialog = customtkinter.CTkInputDialog(text="Input minimum price:", title="Search Food Items from any Establishment based on a given price range AND food type")
+            min_price = min_price_dialog.get_input()
+            if min_price:
+                max_price_dialog = customtkinter.CTkInputDialog(text="Input maximum price:", title="Search Food Items from any Establishment based on a given price range AND food type")
+                max_price = max_price_dialog.get_input()
+                if max_price:
+                    food_type_dialog = customtkinter.CTkInputDialog(text="Input food type:", title="Search Food Items from any Establishment based on a given price range AND food type")
+                    food_type = food_type_dialog.get_input()
+                    if food_type:
+                        try:
+                            min_price = float(min_price)
+                            max_price = float(max_price)
+                            if min_price > max_price:
+                                print("Minimum price must be less than or equal to maximum price")
+                            elif max_price > 9999.99:
+                                print("Maximum price must be less than or equal to 9999.99")
+                            else:
+                                summary_report.read_all_food_items_any_establishment_pricerange_foodtype(self.connection, establishment_name, min_price, max_price, food_type)
+                        except ValueError:
+                            print("Please enter a valid number for price")
+                    else:
+                        print("Input food type input was canceled")
+                else:
+                    print("Input maximum price input was canceled")
+            else:
+                print("Input minimum price input was canceled")
+        else:
+            print("Input establishment name input was canceled")
+
+
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)

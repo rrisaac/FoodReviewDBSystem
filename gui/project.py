@@ -194,7 +194,7 @@ class App(customtkinter.CTk):
         self.table_frame = ttk.Frame(self)
         self.table_frame.grid(row=2, column=1, columnspan=2, padx=(20, 20), pady=(0, 0), sticky="nsew")
         # Create a canvas inside the frame
-        self.canvas = tk.Canvas(self.table_frame)
+        self.canvas = tk.Canvas(self.table_frame, bg="gray10")
         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         # Add a scrollbar to the canvas
         self.scrollbar = ttk.Scrollbar(self.table_frame, orient=tk.VERTICAL, command=self.canvas.yview)
@@ -973,7 +973,36 @@ class App(customtkinter.CTk):
         establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Reviews for an Establishment")
         establishment_name = establishment_name_dialog.get_input()
         if establishment_name:
-            summary_report.read_all_food_reviews_establishment(self.connection, establishment_name)
+            tabledata = summary_report.read_all_food_reviews_establishment(self.connection, establishment_name)
+            
+            if tabledata is None:
+                print('No output')
+                messagebox.showinfo("Message", "Empty Dataset.")
+            else:
+                if self.table:
+                    self.table.destroy()
+                query = tabledata[0]
+                data = tabledata[1]
+                columns = self.buildColumns(len(data[0]))
+
+                # Create the Treeview table
+                self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                
+                # Define the headings for each column
+                self.buildHeaders(columns, ["Review ID", "Review Type", "Review Message", "Review Date", "Review Rating", "Food Item ID", "Establishment ID", "User ID"])
+                # Insert the fetched data into the table
+                for row in data:
+                    self.table.insert("", "end", values=row)
+                
+                # Pack the table into the inner_frame
+                self.table.pack(expand=True, fill='both')
+                
+                self.stretch_table()
+                
+                # Clear and update existing content in the textbox
+                self.textbox.delete(1.0, tk.END)
+                self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+            
         else:
             print("Input establishment name input was canceled")
 
@@ -981,7 +1010,36 @@ class App(customtkinter.CTk):
         food_name_dialog = customtkinter.CTkInputDialog(text="Input food name:", title="Read All Food Reviews for a Food Item")
         food_name = food_name_dialog.get_input()
         if food_name:
-            summary_report.read_all_food_reviews_item(self.connection, food_name)
+            tabledata = summary_report.read_all_food_reviews_item(self.connection, food_name)
+            
+            if tabledata is None:
+                print('No output')
+                messagebox.showinfo("Message", "Empty Dataset.")
+            else:
+                if self.table:
+                    self.table.destroy()
+                query = tabledata[0]
+                data = tabledata[1]
+                columns = self.buildColumns(len(data[0]))
+
+                # Create the Treeview table
+                self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                
+                # Define the headings for each column
+                self.buildHeaders(columns, ["Review ID", "Review Type", "Review Message", "Review Date", "Review Rating", "Food Item ID", "Establishment ID", "User ID"])
+                # Insert the fetched data into the table
+                for row in data:
+                    self.table.insert("", "end", values=row)
+                
+                # Pack the table into the inner_frame
+                self.table.pack(expand=True, fill='both')
+                
+                self.stretch_table()
+                
+                # Clear and update existing content in the textbox
+                self.textbox.delete(1.0, tk.END)
+                self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+                
         else:
             print("Input food name input was canceled")
 
@@ -989,7 +1047,36 @@ class App(customtkinter.CTk):
         establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Items for an Establishment")
         establishment_name = establishment_name_dialog.get_input()
         if establishment_name:
-            summary_report.read_all_food_items_establishment(self.connection, establishment_name)
+            tabledata = summary_report.read_all_food_items_establishment(self.connection, establishment_name)
+            
+            if tabledata is None:
+                print('No output')
+                messagebox.showinfo("Message", "Empty Dataset.")
+            else:
+                if self.table:
+                    self.table.destroy()
+                query = tabledata[0]
+                data = tabledata[1]
+                columns = self.buildColumns(len(data[0]))
+
+                # Create the Treeview table
+                self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                
+                # Define the headings for each column
+                self.buildHeaders(columns, ["Food ID", "Food Name", "Food Type", "Food Price", "Food Average Rating", "Establishment ID"])
+                # Insert the fetched data into the table
+                for row in data:
+                    self.table.insert("", "end", values=row)
+                
+                # Pack the table into the inner_frame
+                self.table.pack(expand=True, fill='both')
+                
+                self.stretch_table()
+                
+                # Clear and update existing content in the textbox
+                self.textbox.delete(1.0, tk.END)
+                self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+                        
         else:
             print("Input establishment name input was canceled")
 
@@ -1000,7 +1087,36 @@ class App(customtkinter.CTk):
             food_type_dialog = customtkinter.CTkInputDialog(text="Input food type:", title="Read All Food Items for an Establishment")
             food_type = food_type_dialog.get_input()
             if food_type:
-                summary_report.read_all_food_items_establishment_foodtype(self.connection, establishment_name, food_type)
+                tabledata = summary_report.read_all_food_items_establishment_foodtype(self.connection, establishment_name, food_type)
+                
+                if tabledata is None:
+                    print('No output')
+                    messagebox.showinfo("Message", "Empty Dataset.")
+                else:
+                    if self.table:
+                        self.table.destroy()
+                    query = tabledata[0]
+                    data = tabledata[1]
+                    columns = self.buildColumns(len(data[0]))
+
+                    # Create the Treeview table
+                    self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                    
+                    # Define the headings for each column
+                    self.buildHeaders(columns, ["Food ID", "Food Name", "Food Type", "Food Price", "Food Average Rating", "Establishment ID"])
+                    # Insert the fetched data into the table
+                    for row in data:
+                        self.table.insert("", "end", values=row)
+                    
+                    # Pack the table into the inner_frame
+                    self.table.pack(expand=True, fill='both')
+                    
+                    self.stretch_table()
+                    
+                    # Clear and update existing content in the textbox
+                    self.textbox.delete(1.0, tk.END)
+                    self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+                
             else:
                 print("Input food type input was canceled")
         else:
@@ -1014,7 +1130,36 @@ class App(customtkinter.CTk):
             month_dialog = customtkinter.CTkInputDialog(text="Input month of reviews to search in {}: ".format(establishment_name), title="Read All Food Reviews for an Establishment within a Month")
             month = month_dialog.get_input()
             if month:
-                summary_report.read_all_food_reviews_establishment_month(self.connection, establishment_name, month)
+                tabledata = summary_report.read_all_food_reviews_establishment_month(self.connection, establishment_name, month)
+                
+                if tabledata is None:
+                    print('No output')
+                    messagebox.showinfo("Message", "Empty Dataset.")
+                else:
+                    if self.table:
+                        self.table.destroy()
+                    query = tabledata[0]
+                    data = tabledata[1]
+                    columns = self.buildColumns(len(data[0]))
+
+                    # Create the Treeview table
+                    self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                    
+                    # Define the headings for each column
+                    self.buildHeaders(columns, ["Review ID", "Review Type", "Review Message", "Review Date", "Review Rating", "Food Item ID", "Establishment ID", "User ID"])
+                    # Insert the fetched data into the table
+                    for row in data:
+                        self.table.insert("", "end", values=row)
+                    
+                    # Pack the table into the inner_frame
+                    self.table.pack(expand=True, fill='both')
+                    
+                    self.stretch_table()
+                    
+                    # Clear and update existing content in the textbox
+                    self.textbox.delete(1.0, tk.END)
+                    self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+            
             else:
                 print("Input month input was canceled")
         else:
@@ -1027,7 +1172,36 @@ class App(customtkinter.CTk):
             month_dialog = customtkinter.CTkInputDialog(text=f"Input month of reviews about {food_item}: ", title="Read All Food Reviews for a Food Item within a Month")
             month = month_dialog.get_input()
             if month:
-                summary_report.read_all_food_reviews_item_month(self.connection, food_item, month)
+                tabledata = summary_report.read_all_food_reviews_item_month(self.connection, food_item, month)
+                
+                if tabledata is None:
+                    print('No output')
+                    messagebox.showinfo("Message", "Empty Dataset.")
+                else:
+                    if self.table:
+                        self.table.destroy()
+                    query = tabledata[0]
+                    data = tabledata[1]
+                    columns = self.buildColumns(len(data[0]))
+
+                    # Create the Treeview table
+                    self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                    
+                    # Define the headings for each column
+                    self.buildHeaders(columns, ["Review ID", "Review Type", "Review Message", "Review Date", "Review Rating", "Food Item ID", "Establishment ID", "User ID"])
+                    # Insert the fetched data into the table
+                    for row in data:
+                        self.table.insert("", "end", values=row)
+                    
+                    # Pack the table into the inner_frame
+                    self.table.pack(expand=True, fill='both')
+                    
+                    self.stretch_table()
+                    
+                    # Clear and update existing content in the textbox
+                    self.textbox.delete(1.0, tk.END)
+                    self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+                
             else:
                 print("Input month input was canceled")
         else:
@@ -1035,7 +1209,35 @@ class App(customtkinter.CTk):
 
     
     def read_all_food_establishments_highrating_input_dialog_event(self):
-        summary_report.read_all_food_establishments_highrating(self.connection)
+        tabledata = summary_report.read_all_food_establishments_highrating(self.connection)
+        
+        if tabledata is None:
+            print('No output')
+            messagebox.showinfo("Message", "Empty Dataset.")
+        else:
+            if self.table:
+                self.table.destroy()
+            query = tabledata[0]
+            data = tabledata[1]
+            columns = self.buildColumns(len(data[0]))
+
+            # Create the Treeview table
+            self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+            
+            # Define the headings for each column
+            self.buildHeaders(columns, ["Establishment ID", "Establishment Name", "Establishment Average Rating"])
+            # Insert the fetched data into the table
+            for row in data:
+                self.table.insert("", "end", values=row)
+            
+            # Pack the table into the inner_frame
+            self.table.pack(expand=True, fill='both')
+            
+            self.stretch_table()
+            
+            # Clear and update existing content in the textbox
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
 
 
     
@@ -1043,7 +1245,36 @@ class App(customtkinter.CTk):
         dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="View All Food Items from an Establishment Arranged According to Price")
         establishment_name = dialog.get_input()
         if establishment_name:
-            summary_report.read_all_food_items_establishment_orderprice(self.connection, establishment_name)
+            tabledata = summary_report.read_all_food_items_establishment_orderprice(self.connection, establishment_name)
+            
+            if tabledata is None:
+                print('No output')
+                messagebox.showinfo("Message", "Empty Dataset.")
+            else:
+                if self.table:
+                    self.table.destroy()
+                query = tabledata[0]
+                data = tabledata[1]
+                columns = self.buildColumns(len(data[0]))
+
+                # Create the Treeview table
+                self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                
+                # Define the headings for each column
+                self.buildHeaders(columns, ["Food ID", "Food Name", "Food Type", "Food Price", "Food Average Rating", "Establishment ID"])
+                # Insert the fetched data into the table
+                for row in data:
+                    self.table.insert("", "end", values=row)
+                
+                # Pack the table into the inner_frame
+                self.table.pack(expand=True, fill='both')
+                
+                self.stretch_table()
+                
+                # Clear and update existing content in the textbox
+                self.textbox.delete(1.0, tk.END)
+                self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+            
         else:
             print("Input establishment name input was canceled")
     
@@ -1065,7 +1296,36 @@ class App(customtkinter.CTk):
                         elif max_price > 9999.99:
                             print("Maximum price must be less than or equal to 9999.99")
                         else:
-                            summary_report.read_all_food_items_any_establishment_pricerange(self.connection, establishment_name, min_price, max_price)
+                            tabledata = summary_report.read_all_food_items_any_establishment_pricerange(self.connection, establishment_name, min_price, max_price)
+                            
+                            if tabledata is None:
+                                print('No output')
+                                messagebox.showinfo("Message", "Empty Dataset.")
+                            else:
+                                if self.table:
+                                    self.table.destroy()
+                                query = tabledata[0]
+                                data = tabledata[1]
+                                columns = self.buildColumns(len(data[0]))
+
+                                # Create the Treeview table
+                                self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                                
+                                # Define the headings for each column
+                                self.buildHeaders(columns, ["Food ID", "Food Name", "Food Type", "Food Price", "Food Average Rating", "Establishment ID"])
+                                # Insert the fetched data into the table
+                                for row in data:
+                                    self.table.insert("", "end", values=row)
+                                
+                                # Pack the table into the inner_frame
+                                self.table.pack(expand=True, fill='both')
+                                
+                                self.stretch_table()
+                                
+                                # Clear and update existing content in the textbox
+                                self.textbox.delete(1.0, tk.END)
+                                self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+                            
                     except ValueError:
                         print("Please enter a valid number for price")
                 else:
@@ -1083,7 +1343,35 @@ class App(customtkinter.CTk):
             food_type_dialog = customtkinter.CTkInputDialog(text="Input food type:", title="Search Food Items from establishment based on a given food type")
             food_type = food_type_dialog.get_input()
             if food_type:
-                summary_report.read_all_food_items_any_establishment_foodtype(self.connection, establishment_name, food_type)
+                tabledata = summary_report.read_all_food_items_any_establishment_foodtype(self.connection, establishment_name, food_type)
+                
+                if tabledata is None:
+                    print('No output')
+                    messagebox.showinfo("Message", "Empty Dataset.")
+                else:
+                    if self.table:
+                        self.table.destroy()
+                    query = tabledata[0]
+                    data = tabledata[1]
+                    columns = self.buildColumns(len(data[0]))
+
+                    # Create the Treeview table
+                    self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                    
+                    # Define the headings for each column
+                    self.buildHeaders(columns, ["Food ID", "Food Name", "Food Type", "Food Price", "Food Average Rating", "Establishment ID"])
+                    # Insert the fetched data into the table
+                    for row in data:
+                        self.table.insert("", "end", values=row)
+                    
+                    # Pack the table into the inner_frame
+                    self.table.pack(expand=True, fill='both')
+                    
+                    self.stretch_table()
+                    
+                    # Clear and update existing content in the textbox
+                    self.textbox.delete(1.0, tk.END)
+                    self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
             else:
                 print("Input food type input was canceled")
         else:
@@ -1110,7 +1398,36 @@ class App(customtkinter.CTk):
                             elif max_price > 9999.99:
                                 print("Maximum price must be less than or equal to 9999.99")
                             else:
-                                summary_report.read_all_food_items_any_establishment_pricerange_foodtype(self.connection, establishment_name, min_price, max_price, food_type)
+                                tabledata = summary_report.read_all_food_items_any_establishment_pricerange_foodtype(self.connection, establishment_name, min_price, max_price, food_type)
+                                
+                                if tabledata is None:
+                                    print('No output')
+                                    messagebox.showinfo("Message", "Empty Dataset.")
+                                else:
+                                    if self.table:
+                                        self.table.destroy()
+                                    query = tabledata[0]
+                                    data = tabledata[1]
+                                    columns = self.buildColumns(len(data[0]))
+
+                                    # Create the Treeview table
+                                    self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                                    
+                                    # Define the headings for each column
+                                    self.buildHeaders(columns, ["Food ID", "Food Name", "Food Type", "Food Price", "Food Average Rating", "Establishment ID"])
+                                    # Insert the fetched data into the table
+                                    for row in data:
+                                        self.table.insert("", "end", values=row)
+                                    
+                                    # Pack the table into the inner_frame
+                                    self.table.pack(expand=True, fill='both')
+                                    
+                                    self.stretch_table()
+                                    
+                                    # Clear and update existing content in the textbox
+                                    self.textbox.delete(1.0, tk.END)
+                                    self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+                                
                         except ValueError:
                             print("Please enter a valid number for price")
                     else:

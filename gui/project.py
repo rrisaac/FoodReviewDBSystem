@@ -425,7 +425,7 @@ class App(customtkinter.CTk):
                     print(f"Value: {value}")
                     
                     # Insert process here
-                    query = food_establishment.update_food_establishment(self.connection, attribute, value, establishment_name)
+                    query = food_establishment.update_food_establishment(self.connection, establishment_name, attribute, value)
                     
                     # Clear and update existing content in the textbox
                     self.textbox.delete(1.0, tk.END)

@@ -9,6 +9,10 @@ from tkinter import filedialog, messagebox
 import customtkinter
 from CTkTable import *
 import food_establishment
+import user
+import food_item
+import food_review
+import summary_report
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -181,7 +185,6 @@ class App(customtkinter.CTk):
             self.create_food_item_input_dialog_event()
         elif selected_value == "Read All Food Items":
             self.read_all_food_items_input_dialog_event()
-            print("diretso na yung pagoperate process")
         elif selected_value == "Read Certain Food Item/s":
             self.read_certain_food_establishment_input_dialog_event()
         elif selected_value == "Update Food Item":
@@ -195,7 +198,6 @@ class App(customtkinter.CTk):
             self.create_food_review_input_dialog_event()
         elif selected_value == "Read All Food Reviews":
             self.read_all_food_reviews_input_dialog_event()
-            print("diretso na yung pagoperate process")
         elif selected_value == "Read Certain Food Review/s":
             self.read_certain_food_review_input_dialog_event()
         elif selected_value == "Update Food Review":
@@ -209,7 +211,6 @@ class App(customtkinter.CTk):
             self.create_user_input_dialog_event()
         elif selected_value == "Read All Users":
             self.read_all_users_input_dialog_event()
-            print("diretso na yung pagoperate process")
         elif selected_value == "Read Certain User/s":
             self.read_certain_user_input_dialog_event()
         elif selected_value == "Update User":
@@ -220,7 +221,7 @@ class App(customtkinter.CTk):
     def dynamic_command_summary_report(self):
         selected_value = self.optionmenu_5.get()
         if selected_value == "View all food establishments":
-            self.read_all_food_establishments_input_dialog_event()
+            self.read_all_food_establishments_input_dialog_event_2()
         elif selected_value == "View all food reviews for an establishment":
             self.read_all_food_reviews_establishment_input_dialog_event()
         elif selected_value == "View all food reviews for a food item":
@@ -256,7 +257,6 @@ class App(customtkinter.CTk):
             print("Establishment name input was canceled")
         
     def read_all_food_establishments_input_dialog_event(self):
-        print("diretso na yung pagoperate process")
         # Insert process here
         food_establishment.read_all_food_establishments(self.connection)
         
@@ -339,9 +339,7 @@ class App(customtkinter.CTk):
             print("Establishment name input was canceled")
         
     def read_all_food_items_input_dialog_event(self):
-        print("diretso na yung pagoperate process")
         # Insert process here
-        
         food_establishment.read_all_food_establishments(self.connection)
     
     def read_certain_food_items_input_dialog_event(self):
@@ -390,7 +388,7 @@ class App(customtkinter.CTk):
             food_name = food_name_dialog.get_input()
             print(f"Food name: {food_name}")
             
-            # Insert process here
+            
         else:
             print("Food name input was canceled")
     
@@ -399,7 +397,8 @@ class App(customtkinter.CTk):
         print("wait")
         
     def read_all_food_reviews_input_dialog_event(self):
-        print("wait")
+        # Insert process here
+        food_review.read_all_food_reviews(self.connection)
     
     def read_certain_food_review_input_dialog_event(self):
         print("wait")
@@ -415,7 +414,8 @@ class App(customtkinter.CTk):
         print("wait")
         
     def read_all_users_input_dialog_event(self):
-        print("wait")
+        # Insert process here
+        user.read_all_users(self.connection)
     
     def read_certain_user_input_dialog_event(self):
         print("wait")
@@ -427,7 +427,7 @@ class App(customtkinter.CTk):
         print("wait")
     
     # Summary Report Inputs
-    def read_all_food_establishments_input_dialog_event(self):
+    def read_all_food_establishments_input_dialog_event_2(self):
         print("wait")
     
     def read_all_food_reviews_establishment_input_dialog_event(self):

@@ -338,7 +338,7 @@ class App(customtkinter.CTk):
         tabledata = food_establishment.read_all_food_establishments(self.connection)
         print(tabledata)
         
-        if tabledata is None:
+        if tabledata is None or tabledata[1] == []:
             print('No output')
             messagebox.showinfo("Message", "Empty Dataset.")
         else:
@@ -376,7 +376,7 @@ class App(customtkinter.CTk):
             # Insert process here
             tabledata = food_establishment.read_certain_food_establishments(self.connection, establishment_name)
             
-            if tabledata is None:
+            if tabledata is None or tabledata[1] == []:
                 print('No output')
                 messagebox.showinfo("Message", "Empty Dataset.")
             else:
@@ -497,7 +497,7 @@ class App(customtkinter.CTk):
         tabledata = food_item.read_all_food_items(self.connection)
         print(tabledata)
         
-        if tabledata is None:
+        if tabledata is None or tabledata[1] == []:
             print('No output')
             messagebox.showinfo("Message", "Empty Dataset.")
         else:
@@ -533,7 +533,7 @@ class App(customtkinter.CTk):
             # Insert process here
             tabledata = food_item.read_certain_food_items(self.connection, food_name)
             
-            if tabledata is None:
+            if tabledata is None or tabledata[1] == []:
                 print('No output')
                 messagebox.showinfo("Message", "Empty Dataset.")
             else:
@@ -675,7 +675,7 @@ class App(customtkinter.CTk):
         # Insert process here
         tabledata = food_review.read_all_food_reviews(self.connection)
         
-        if tabledata is None:
+        if tabledata is None or tabledata[1] == []:
             print('No output')
             messagebox.showinfo("Message", "Empty Dataset.")
         else:
@@ -859,7 +859,7 @@ class App(customtkinter.CTk):
         # Insert process here
         tabledata = user.read_all_users(self.connection)
         
-        if tabledata is None:
+        if tabledata is None or tabledata[1] == []:
             print('No output')
             messagebox.showinfo("Message", "Empty Dataset.")
         else:
@@ -893,7 +893,7 @@ class App(customtkinter.CTk):
         if user_username:
             tabledata = user.read_certain_user(self.connection, user_username)
             
-            if tabledata is None:
+            if tabledata is None or tabledata[1] == []:
                 print('No output')
                 messagebox.showinfo("Message", "Empty Dataset.")
             else:
@@ -970,7 +970,7 @@ class App(customtkinter.CTk):
         if establishment_name:
             tabledata = summary_report.read_all_food_reviews_establishment(self.connection, establishment_name)
             
-            if tabledata is None:
+            if tabledata is None or tabledata[1] == []:
                 print('No output')
                 messagebox.showinfo("Message", "Empty Dataset.")
             else:
@@ -1007,7 +1007,7 @@ class App(customtkinter.CTk):
         if food_name:
             tabledata = summary_report.read_all_food_reviews_item(self.connection, food_name)
             
-            if tabledata is None:
+            if tabledata is None or tabledata[1] == []:
                 print('No output')
                 messagebox.showinfo("Message", "Empty Dataset.")
             else:
@@ -1044,7 +1044,7 @@ class App(customtkinter.CTk):
         if establishment_name:
             tabledata = summary_report.read_all_food_items_establishment(self.connection, establishment_name)
             
-            if tabledata is None:
+            if tabledata is None or tabledata[1] == []:
                 print('No output')
                 messagebox.showinfo("Message", "Empty Dataset.")
             else:
@@ -1084,7 +1084,7 @@ class App(customtkinter.CTk):
             if food_type:
                 tabledata = summary_report.read_all_food_items_establishment_foodtype(self.connection, establishment_name, food_type)
                 
-                if tabledata is None:
+                if tabledata is None or tabledata[1] == []:
                     print('No output')
                     messagebox.showinfo("Message", "Empty Dataset.")
                 else:
@@ -1127,7 +1127,7 @@ class App(customtkinter.CTk):
             if month:
                 tabledata = summary_report.read_all_food_reviews_establishment_month(self.connection, establishment_name, month)
                 
-                if tabledata is None:
+                if tabledata is None or tabledata[1] == []:
                     print('No output')
                     messagebox.showinfo("Message", "Empty Dataset.")
                 else:
@@ -1169,7 +1169,7 @@ class App(customtkinter.CTk):
             if month:
                 tabledata = summary_report.read_all_food_reviews_item_month(self.connection, food_item, month)
                 
-                if tabledata is None:
+                if tabledata is None or tabledata[1] == []:
                     print('No output')
                     messagebox.showinfo("Message", "Empty Dataset.")
                 else:
@@ -1206,7 +1206,7 @@ class App(customtkinter.CTk):
     def read_all_food_establishments_highrating_input_dialog_event(self):
         tabledata = summary_report.read_all_food_establishments_highrating(self.connection)
         
-        if tabledata is None:
+        if tabledata is None or tabledata[1] == []:
             print('No output')
             messagebox.showinfo("Message", "Empty Dataset.")
         else:
@@ -1242,7 +1242,7 @@ class App(customtkinter.CTk):
         if establishment_name:
             tabledata = summary_report.read_all_food_items_establishment_orderprice(self.connection, establishment_name)
             
-            if tabledata is None:
+            if tabledata is None or tabledata[1] == []:
                 print('No output')
                 messagebox.showinfo("Message", "Empty Dataset.")
             else:
@@ -1293,7 +1293,7 @@ class App(customtkinter.CTk):
                         else:
                             tabledata = summary_report.read_all_food_items_any_establishment_pricerange(self.connection, establishment_name, min_price, max_price)
                             
-                            if tabledata is None:
+                            if tabledata is None or tabledata[1] == []:
                                 print('No output')
                                 messagebox.showinfo("Message", "Empty Dataset.")
                             else:
@@ -1340,7 +1340,7 @@ class App(customtkinter.CTk):
             if food_type:
                 tabledata = summary_report.read_all_food_items_any_establishment_foodtype(self.connection, establishment_name, food_type)
                 
-                if tabledata is None:
+                if tabledata is None or tabledata[1] == []:
                     print('No output')
                     messagebox.showinfo("Message", "Empty Dataset.")
                 else:
@@ -1395,7 +1395,7 @@ class App(customtkinter.CTk):
                             else:
                                 tabledata = summary_report.read_all_food_items_any_establishment_pricerange_foodtype(self.connection, establishment_name, min_price, max_price, food_type)
                                 
-                                if tabledata is None:
+                                if tabledata is None or tabledata[1] == []:
                                     print('No output')
                                     messagebox.showinfo("Message", "Empty Dataset.")
                                 else:

@@ -208,23 +208,13 @@ class App(customtkinter.CTk):
         self.inner_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
         # Assuming self.inner_frame is already defined and is a valid Frame
         self.table = ttk.Treeview(self.inner_frame, columns=("Column1"))
-              
-
-        query = f"""
-        SELECT * FROM foodItem
-        WHERE (food_type LIKE '%meat%')
-        AND (food_foodestablishmentid = (
-            SELECT establishment_id FROM foodEstablishment
-            WHERE establishment_name = “Pizza Hut”
-        ));
-        """
     
         # set default values
         self.sidebar_button_3.configure(text="Reset")
         # self.appearance_mode_optionemenu.set("Dark")
         # self.scaling_optionemenu.set("100%")
         self.optionmenu_1.set("Create Food Establishment")
-        self.textbox.insert("0.0", "SQL Query\n" + query + "\n\n")
+        self.textbox.insert("0.0", "SQL Query\n" + "\n\n")
        
         
     def dynamic_command_food_establishment(self):
@@ -247,11 +237,11 @@ class App(customtkinter.CTk):
         elif selected_value == "Read All Food Items":
             self.read_all_food_items_input_dialog_event()
         elif selected_value == "Read Certain Food Item/s":
-            self.read_certain_food_establishment_input_dialog_event()
+            self.read_certain_food_items_input_dialog_event()
         elif selected_value == "Update Food Item":
-            self.update_food_establishment_input_dialog_event()
+            self.update_food_item_input_dialog_event()
         elif selected_value == "Delete Food Item":
-            self.delete_food_establishment_input_dialog_event()
+            self.delete_food_item_input_dialog_event()
         
     def dynamic_command_food_review(self):
         selected_value = self.optionmenu_3.get()
@@ -323,6 +313,12 @@ class App(customtkinter.CTk):
         if establishment_name:
             print(f"Establishment Name: {establishment_name}")
             # Insert process here
+            query = food_establishment.create_food_establishment(self.connection, establishment_name)
+            
+            # Clear and update existing content in the textbox
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+            
         else:
             print("Establishment name input was canceled")
 
@@ -365,6 +361,10 @@ class App(customtkinter.CTk):
             self.table.pack(expand=True, fill='both')
             
             self.stretch_table()
+            
+            # Clear and update existing content in the textbox
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
         
     
     def read_certain_food_establishment_input_dialog_event(self):
@@ -374,6 +374,36 @@ class App(customtkinter.CTk):
         if establishment_name:
             print(f"Establishment Name: {establishment_name}")
             # Insert process here
+            tabledata = food_establishment.read_certain_food_establishments(self.connection, establishment_name)
+            
+            if tabledata is None:
+                print('No output')
+                messagebox.showinfo("Message", "Empty Dataset.")
+            else:
+                if self.table:
+                    self.table.destroy()
+                query = tabledata[0]
+                data = tabledata[1]
+                columns = self.buildColumns(len(data[0]))
+
+                # Create the Treeview table
+                self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                
+                # Define the headings for each column
+                self.buildHeaders(columns, ["Establishment ID", "Establishment Name", "Establishment Average Rating"])
+                # Insert the fetched data into the table
+                for row in data:
+                    self.table.insert("", "end", values=row)
+                
+                # Pack the table into the inner_frame
+                self.table.pack(expand=True, fill='both')
+                
+                self.stretch_table()
+                
+                # Clear and update existing content in the textbox
+                self.textbox.delete(1.0, tk.END)
+                self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+            
         else:
             print("Establishment name input was canceled")
         
@@ -386,14 +416,21 @@ class App(customtkinter.CTk):
             attribute = attribute_dialog.get_input()
             
             if attribute:
-                value_dialog = customtkinter.CTkInputDialog(text="Input attribute to update:", title="Update Food Establishment")         
+                value_dialog = customtkinter.CTkInputDialog(text="Input value to update:", title="Update Food Establishment")         
                 value = value_dialog.get_input()
                     
                 if value: 
                     print(f"Establishment Name: {establishment_name}")
                     print(f"Attribute: {attribute}")
                     print(f"Value: {value}")
+                    
                     # Insert process here
+                    query = food_establishment.update_food_establishment(self.connection, attribute, value, establishment_name)
+                    
+                    # Clear and update existing content in the textbox
+                    self.textbox.delete(1.0, tk.END)
+                    self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+                    
                 else:
                     print("Value input was canceled")
             else:
@@ -408,6 +445,12 @@ class App(customtkinter.CTk):
         if establishment_name:
             print(f"Establishment Name: {establishment_name}")
             # Insert process here
+            query = food_establishment.delete_food_establishment(self.connection, establishment_name)
+            
+            # Clear and update existing content in the textbox
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+            
         else:
             print("Establishment name input was canceled")
         
@@ -435,6 +478,11 @@ class App(customtkinter.CTk):
                         print(f"Price: {price}")
                         
                         # Insert process here
+                        query = food_item.create_food_item(self.connection, establishment_name, food_name, food_type, price)
+                        
+                        # Clear and update existing content in the textbox
+                        self.textbox.delete(1.0, tk.END)
+                        self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
                     else:
                         print("Price input was canceled")
                 else:
@@ -446,7 +494,36 @@ class App(customtkinter.CTk):
         
     def read_all_food_items_input_dialog_event(self):
         # Insert process here
-        food_establishment.read_all_food_establishments(self.connection)
+        tabledata = food_item.read_all_food_establishments(self.connection)
+        print(tabledata)
+        
+        if tabledata is None:
+            print('No output')
+            messagebox.showinfo("Message", "Empty Dataset.")
+        else:
+            if self.table:
+                self.table.destroy()
+            query = tabledata[0]
+            data = tabledata[1]
+            columns = self.buildColumns(len(data[0]))
+
+            # Create the Treeview table
+            self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+            
+            # Define the headings for each column
+            self.buildHeaders(columns, ["Food ID", "Food Name", "Food Type", "Food Price", "Food Average Rating", "Establishment ID"])
+            # Insert the fetched data into the table
+            for row in data:
+                self.table.insert("", "end", values=row)
+            
+            # Pack the table into the inner_frame
+            self.table.pack(expand=True, fill='both')
+            
+            self.stretch_table()
+            
+            # Clear and update existing content in the textbox
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
     
     def read_certain_food_items_input_dialog_event(self):
         food_name_dialog = customtkinter.CTkInputDialog(text="Input food name:", title="Read Certain Food Item/s")
@@ -458,6 +535,36 @@ class App(customtkinter.CTk):
             print(f"Food name: {food_name}")
             
             # Insert process here
+            tabledata = food_item.read_certain_food_items(self.connection, food_name)
+            
+            if tabledata is None:
+                print('No output')
+                messagebox.showinfo("Message", "Empty Dataset.")
+            else:
+                if self.table:
+                    self.table.destroy()
+                query = tabledata[0]
+                data = tabledata[1]
+                columns = self.buildColumns(len(data[0]))
+
+                # Create the Treeview table
+                self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                
+                # Define the headings for each column
+                self.buildHeaders(columns, ["Food ID", "Food Name", "Food Type", "Food Price", "Food Average Rating", "Establishment ID"])
+                # Insert the fetched data into the table
+                for row in data:
+                    self.table.insert("", "end", values=row)
+                
+                # Pack the table into the inner_frame
+                self.table.pack(expand=True, fill='both')
+                
+                self.stretch_table()
+                
+                # Clear and update existing content in the textbox
+                self.textbox.delete(1.0, tk.END)
+                self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+            
         else:
             print("Food name input was canceled")
             
@@ -478,6 +585,13 @@ class App(customtkinter.CTk):
                     print(f"Attribute: {attribute}")
                     print(f"Value: {value}")
                     # Insert process here
+                    
+                    query = food_item.update_food_item(self.connection, food_name, attribute, value)
+                    
+                    # Clear and update existing content in the textbox
+                    self.textbox.delete(1.0, tk.END)
+                    self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+                    
                 else:
                     print("Value input was canceled")
             else:
@@ -494,6 +608,12 @@ class App(customtkinter.CTk):
             food_name = food_name_dialog.get_input()
             print(f"Food name: {food_name}")
             
+            # Insert process here
+            query = food_item.delete_food_item(self.connection, food_name)       
+            
+            # Clear and update existing content in the textbox
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")    
             
         else:
             print("Food name input was canceled")
@@ -544,8 +664,12 @@ class App(customtkinter.CTk):
                         print(f"Comment: {comment}")
                         print(f"Date: {review_date}")
                         # Insert the thing here
-                        food_review.create_food_review(self.connection, comment, review_date, rating, food_name, establishment_name, user_username)
-
+                        query = food_review.create_food_review(self.connection, comment, review_date, rating, food_name, establishment_name, user_username)
+                        
+                        # Clear and update existing content in the textbox
+                        self.textbox.delete(1.0, tk.END)
+                        self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+                        
                     else:
                         print("Comment input was canceled")
                 else:
@@ -556,12 +680,38 @@ class App(customtkinter.CTk):
             print("User name input was canceled")
 
 
-
-
-        
     def read_all_food_reviews_input_dialog_event(self):
         # Insert process here
-        food_review.read_all_food_reviews(self.connection)
+        tabledata = food_review.read_all_food_reviews(self.connection)
+        
+        if tabledata is None:
+            print('No output')
+            messagebox.showinfo("Message", "Empty Dataset.")
+        else:
+            if self.table:
+                self.table.destroy()
+            query = tabledata[0]
+            data = tabledata[1]
+            columns = self.buildColumns(len(data[0]))
+
+            # Create the Treeview table
+            self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+            
+            # Define the headings for each column
+            self.buildHeaders(columns, ["Review ID", "Review Type", "Review Message", "Review Date", "Review Rating", "Food Item ID", "Establishment ID", "User ID"])
+            # Insert the fetched data into the table
+            for row in data:
+                self.table.insert("", "end", values=row)
+            
+            # Pack the table into the inner_frame
+            self.table.pack(expand=True, fill='both')
+            
+            self.stretch_table()
+            
+            # Clear and update existing content in the textbox
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+            
     
     def read_certain_food_review_input_dialog_event(self):
         establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name to read:", title="Read Certain Food Review/s")
@@ -588,7 +738,35 @@ class App(customtkinter.CTk):
                     print(f"User Name: {username}")
                     print(f"Date: {review_date}")
                     # Insert the thing here
-                    food_review.read_certain_food_reviews(self.connection, food_name, username, establishment_name, review_date)
+                    tabledata = food_review.read_certain_food_reviews(self.connection, food_name, username, establishment_name, review_date)
+                    
+                    if tabledata is None:
+                        print('No output')
+                        messagebox.showinfo("Message", "Empty Dataset.")
+                    else:
+                        if self.table:
+                            self.table.destroy()
+                        query = tabledata[0]
+                        data = tabledata[1]
+                        columns = self.buildColumns(len(data[0]))
+
+                        # Create the Treeview table
+                        self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                        
+                        # Define the headings for each column
+                        self.buildHeaders(columns, ["Review ID", "Review Type", "Review Message", "Review Date", "Review Rating", "Food Item ID", "Establishment ID", "User ID"])
+                        # Insert the fetched data into the table
+                        for row in data:
+                            self.table.insert("", "end", values=row)
+                        
+                        # Pack the table into the inner_frame
+                        self.table.pack(expand=True, fill='both')
+                        
+                        self.stretch_table()
+                        
+                        # Clear and update existing content in the textbox
+                        self.textbox.delete(1.0, tk.END)
+                        self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
                     
                 else:
                     print("Username input was canceled")
@@ -624,7 +802,12 @@ class App(customtkinter.CTk):
                         input_value_dialog = customtkinter.CTkInputDialog(text="Input new value:", title="Update Food Review")
                         input_value = input_value_dialog.get_input()
                         if input_value:
-                            food_review.update_food_review(self.connection, food_name, username, establishment_name, date_str, input_attribute, input_value)
+                            query = food_review.update_food_review(self.connection, food_name, username, establishment_name, date_str, input_attribute, input_value)
+                            
+                            # Clear and update existing content in the textbox
+                            self.textbox.delete(1.0, tk.END)
+                            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+                            
                             print("Food review updated successfully.")
                         else:
                             print("Input value input was canceled")
@@ -638,8 +821,6 @@ class App(customtkinter.CTk):
             print("Establishment name input was canceled")
 
 
-
-    
     def delete_food_review_input_dialog_event(self):
         user_username_dialog = customtkinter.CTkInputDialog(text="Enter the username of the user who made the review (leave blank if none):", title="Delete Food Review")
         user_username = user_username_dialog.get_input()
@@ -658,7 +839,11 @@ class App(customtkinter.CTk):
         establishment_name = establishment_name_dialog.get_input()
         food_name_dialog = customtkinter.CTkInputDialog(text="Enter food name (leave blank if none):", title="Delete Food Review")
         food_name = food_name_dialog.get_input()
-        food_review.delete_food_review(self.connection, user_username, review_date, establishment_name, food_name)
+        
+        query = food_review.delete_food_review(self.connection, user_username, review_date, establishment_name, food_name)
+        # Clear and update existing content in the textbox
+        self.textbox.delete(1.0, tk.END)
+        self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
     
     # User Inputs
     def create_user_input_dialog_event(self):
@@ -668,7 +853,11 @@ class App(customtkinter.CTk):
             user_password_dialog = customtkinter.CTkInputDialog(text="Input password:", title="Create User")
             user_password = user_password_dialog.get_input()
             if user_password:
-                user.create_user(self.connection, user_username, user_password)
+                query = user.create_user(self.connection, user_username, user_password)
+                
+                # Clear and update existing content in the textbox
+                self.textbox.delete(1.0, tk.END)
+                self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
             else:
                 print("Input password input was canceled")
         else:
@@ -677,13 +866,70 @@ class App(customtkinter.CTk):
         
     def read_all_users_input_dialog_event(self):
         # Insert process here
-        user.read_all_users(self.connection)
+        tabledata = user.read_all_users(self.connection)
+        
+        if tabledata is None:
+            print('No output')
+            messagebox.showinfo("Message", "Empty Dataset.")
+        else:
+            if self.table:
+                self.table.destroy()
+            query = tabledata[0]
+            data = tabledata[1]
+            columns = self.buildColumns(len(data[0]))
+
+            # Create the Treeview table
+            self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+            
+            # Define the headings for each column
+            self.buildHeaders(columns, ["User ID", "Username", "Password"])
+            # Insert the fetched data into the table
+            for row in data:
+                self.table.insert("", "end", values=row)
+            
+            # Pack the table into the inner_frame
+            self.table.pack(expand=True, fill='both')
+            
+            self.stretch_table()
+            
+            # Clear and update existing content in the textbox
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
     
     def read_certain_user_input_dialog_event(self):
         user_username_dialog = customtkinter.CTkInputDialog(text="Input username:", title="Read Certain User")
         user_username = user_username_dialog.get_input()
         if user_username:
-            user.read_certain_user(self.connection, user_username)
+            tabledata = user.read_certain_user(self.connection, user_username)
+            
+            if tabledata is None:
+                print('No output')
+                messagebox.showinfo("Message", "Empty Dataset.")
+            else:
+                if self.table:
+                    self.table.destroy()
+                query = tabledata[0]
+                data = tabledata[1]
+                columns = self.buildColumns(len(data[0]))
+
+                # Create the Treeview table
+                self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+                
+                # Define the headings for each column
+                self.buildHeaders(columns, ["User ID", "Username", "Password"])
+                # Insert the fetched data into the table
+                for row in data:
+                    self.table.insert("", "end", values=row)
+                
+                # Pack the table into the inner_frame
+                self.table.pack(expand=True, fill='both')
+                
+                self.stretch_table()
+                
+                # Clear and update existing content in the textbox
+                self.textbox.delete(1.0, tk.END)
+                self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+            
         else:
             print("Input username input was canceled")
     
@@ -697,7 +943,12 @@ class App(customtkinter.CTk):
                 input_username_dialog = customtkinter.CTkInputDialog(text=f"Input new {input_attribute} value of {user_username}: ", title="Update User")
                 input_username = input_username_dialog.get_input()
                 if input_username:
-                    user.update_user(self.connection, input_attribute, user_username, input_username)
+                    query = user.update_user(self.connection, input_attribute, user_username, input_username)
+                   
+                    # Clear and update existing content in the textbox
+                    self.textbox.delete(1.0, tk.END)
+                    self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+                    
                 else:
                     print("Input username input was canceled")
             else:
@@ -710,12 +961,14 @@ class App(customtkinter.CTk):
         user_username_dialog = customtkinter.CTkInputDialog(text="Input username:", title="Delete User")
         user_username = user_username_dialog.get_input()
         if user_username:
-            user.delete_user(self.connection, user_username)
+            query = user.delete_user(self.connection, user_username)
+            
+            # Clear and update existing content in the textbox
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
         else:
             print("Input username input was canceled")
 
-
-    
     # Summary Report Inputs
     def read_all_food_establishments_input_dialog_event_2(self):
         summary_report.read_all_food_establishments(self.connection)

@@ -425,7 +425,7 @@ class App(customtkinter.CTk):
                     print(f"Value: {value}")
                     
                     # Insert process here
-                    query = food_establishment.update_food_establishment(self.connection, attribute, value, establishment_name)
+                    query = food_establishment.update_food_establishment(self.connection, establishment_name, attribute, value)
                     
                     # Clear and update existing content in the textbox
                     self.textbox.delete(1.0, tk.END)
@@ -494,7 +494,7 @@ class App(customtkinter.CTk):
         
     def read_all_food_items_input_dialog_event(self):
         # Insert process here
-        tabledata = food_item.read_all_food_establishments(self.connection)
+        tabledata = food_item.read_all_food_items(self.connection)
         print(tabledata)
         
         if tabledata is None:
@@ -530,10 +530,6 @@ class App(customtkinter.CTk):
         food_name = food_name_dialog.get_input()
         
         if food_name:
-            food_name_dialog = customtkinter.CTkInputDialog(text="Input food name:", title="Read Certain Food Item/s")
-            food_name = food_name_dialog.get_input()
-            print(f"Food name: {food_name}")
-            
             # Insert process here
             tabledata = food_item.read_certain_food_items(self.connection, food_name)
             
@@ -577,7 +573,7 @@ class App(customtkinter.CTk):
             attribute = attribute_dialog.get_input()
             
             if attribute:
-                value_dialog = customtkinter.CTkInputDialog(text="Input attribute to update:", title="Update Food Item")         
+                value_dialog = customtkinter.CTkInputDialog(text="Input value to update:", title="Update Food Item")         
                 value = value_dialog.get_input()
                     
                 if value: 
@@ -602,12 +598,7 @@ class App(customtkinter.CTk):
     def delete_food_item_input_dialog_event(self):
         food_name_dialog = customtkinter.CTkInputDialog(text="Input food name:", title="Delete Food Item")
         food_name = food_name_dialog.get_input()
-        
         if food_name:
-            food_name_dialog = customtkinter.CTkInputDialog(text="Input food name:", title="Delete Food Item")
-            food_name = food_name_dialog.get_input()
-            print(f"Food name: {food_name}")
-            
             # Insert process here
             query = food_item.delete_food_item(self.connection, food_name)       
             
@@ -714,66 +705,66 @@ class App(customtkinter.CTk):
             
     
     def read_certain_food_review_input_dialog_event(self):
-        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name to read:", title="Read Certain Food Review/s")
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name to read (leave blank if none):", title="Read Certain Food Review/s")
         establishment_name = establishment_name_dialog.get_input()
-        if establishment_name:
-            food_name_dialog = customtkinter.CTkInputDialog(text="Input food name to read:", title="Read Certain Food Review/s")
-            food_name = food_name_dialog.get_input()
-            if food_name:
-                username_dialog = customtkinter.CTkInputDialog(text="Input username to read:", title="Read Certain Food Review/s")
-                username = username_dialog.get_input()
-                if username:
-                    date_dialog = customtkinter.CTkInputDialog(text="Input date to read (yyyy-mm-dd):", title="Read Certain Food Review/s")
-                    review_date = date_dialog.get_input()
-                    while True:
-                        if review_date.strip() == "" or review_date is None:
-                            break
-                        elif not App.validate_date(review_date):
-                            review_date = customtkinter.CTkInputDialog(text="Invalid date format. Please enter in YYYY-MM-DD format.", title="Read Certain Food Review/s").get_input()
-                            continue
-                        else:
-                            break
-                    print(f"Establishment Name: {establishment_name}")
-                    print(f"Food name: {food_name}")
-                    print(f"User Name: {username}")
-                    print(f"Date: {review_date}")
-                    # Insert the thing here
-                    tabledata = food_review.read_certain_food_reviews(self.connection, food_name, username, establishment_name, review_date)
-                    
-                    if tabledata is None:
-                        print('No output')
-                        messagebox.showinfo("Message", "Empty Dataset.")
-                    else:
-                        if self.table:
-                            self.table.destroy()
-                        query = tabledata[0]
-                        data = tabledata[1]
-                        columns = self.buildColumns(len(data[0]))
-
-                        # Create the Treeview table
-                        self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
-                        
-                        # Define the headings for each column
-                        self.buildHeaders(columns, ["Review ID", "Review Type", "Review Message", "Review Date", "Review Rating", "Food Item ID", "Establishment ID", "User ID"])
-                        # Insert the fetched data into the table
-                        for row in data:
-                            self.table.insert("", "end", values=row)
-                        
-                        # Pack the table into the inner_frame
-                        self.table.pack(expand=True, fill='both')
-                        
-                        self.stretch_table()
-                        
-                        # Clear and update existing content in the textbox
-                        self.textbox.delete(1.0, tk.END)
-                        self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
-                    
-                else:
-                    print("Username input was canceled")
+        if establishment_name.strip() == "" or establishment_name is None:
+            establishment_name = None
+        food_name_dialog = customtkinter.CTkInputDialog(text="Input food name to read (leave blank if none):", title="Read Certain Food Review/s")
+        food_name = food_name_dialog.get_input()
+        if food_name.strip() == "" or food_name is None:
+            food_name = None
+        username_dialog = customtkinter.CTkInputDialog(text="Input username to read (leave blank if none):", title="Read Certain Food Review/s")
+        username = username_dialog.get_input()
+        if username.strip() == "" or username is None:
+            username = None
+        date_dialog = customtkinter.CTkInputDialog(text="Input date to read (yyyy-mm-dd, leave blank if none):", title="Read Certain Food Review/s")
+        review_date = date_dialog.get_input()
+        while True:
+            if review_date.strip() == "" or review_date is None:
+                review_date = None
+                break
+            elif not App.validate_date(review_date):
+                review_date = customtkinter.CTkInputDialog(text="Invalid date format. Please enter in YYYY-MM-DD format.", title="Read Certain Food Review/s").get_input()
+                continue
             else:
-                print("Food name input was canceled")
+                break
+        print(f"Establishment Name: {establishment_name or 'None'}")
+        print(f"Food name: {food_name or 'None'}")
+        print(f"User Name: {username or 'None'}")
+        print(f"Date: {review_date or 'None'}")
+        # Insert the thing here
+        tabledata = food_review.read_certain_food_reviews(self.connection, food_name, username, establishment_name, review_date)
+        print(tabledata[1])
+        if tabledata is None or tabledata[1] == []:
+            print('No output')
+            messagebox.showinfo("Message", "Empty Dataset.")
         else:
-            print("Establishment name input was canceled")
+            if self.table:
+                self.table.destroy()
+            query = tabledata[0]
+            data = tabledata[1]
+            columns = self.buildColumns(len(data[0]))
+
+            # Create the Treeview table
+            self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+            
+            # Define the headings for each column
+            self.buildHeaders(columns, ["Review ID", "Review Type", "Review Message", "Review Date", "Review Rating", "Food Item ID", "Establishment ID", "User ID"])
+            # Insert the fetched data into the table
+            for row in data:
+                self.table.insert("", "end", values=row)
+            
+            # Pack the table into the inner_frame
+            self.table.pack(expand=True, fill='both')
+            
+            self.stretch_table()
+            
+            # Clear and update existing content in the textbox
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+        
+
+
 
     
     def update_food_review_input_dialog_event(self):

@@ -8,6 +8,9 @@ import tkinter.messagebox
 from tkinter import filedialog, messagebox
 import customtkinter
 from CTkTable import *
+
+# Add the directory containing food_establishment.py to the system path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import food_establishment
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
@@ -192,57 +195,34 @@ class App(customtkinter.CTk):
     def dynamic_command_food_review(self):
         selected_value = self.optionmenu_3.get()
         if selected_value == "Create Food Review":
-            self.create_food_review_input_dialog_event()
+            self.create_food_establishment_input_dialog_event()
         elif selected_value == "Read All Food Reviews":
-            self.read_all_food_reviews_input_dialog_event()
+            self.read_all_food_establishments_input_dialog_event()
             print("diretso na yung pagoperate process")
         elif selected_value == "Read Certain Food Review/s":
-            self.read_certain_food_review_input_dialog_event()
+            self.read_certain_food_establishment_input_dialog_event()
         elif selected_value == "Update Food Review":
-            self.update_food_review_input_dialog_event()
+            self.update_food_establishment_input_dialog_event()
         elif selected_value == "Delete Food Review":
-            self.delete_food_review_input_dialog_event()
+            self.delete_food_establishment_input_dialog_event()
         
     def dynamic_command_user(self):
         selected_value = self.optionmenu_4.get()
         if selected_value == "Create User":
-            self.create_user_input_dialog_event()
+            self.create_food_establishment_input_dialog_event()
         elif selected_value == "Read All Users":
-            self.read_all_users_input_dialog_event()
+            self.read_all_food_establishments_input_dialog_event()
             print("diretso na yung pagoperate process")
         elif selected_value == "Read Certain User/s":
-            self.read_certain_user_input_dialog_event()
+            self.read_certain_food_establishment_input_dialog_event()
         elif selected_value == "Update User":
-            self.update_user_input_dialog_event()
+            self.update_food_establishment_input_dialog_event()
         elif selected_value == "Delete User":
-            self.delete_user_input_dialog_event()
+            self.delete_food_establishment_input_dialog_event()
             
     def dynamic_command_summary_report(self):
         selected_value = self.optionmenu_5.get()
-        if selected_value == "View all food establishments":
-            self.read_all_food_establishments_input_dialog_event()
-        elif selected_value == "View all food reviews for an establishment":
-            self.read_all_food_reviews_establishment_input_dialog_event()
-        elif selected_value == "View all food reviews for a food item":
-            self.read_all_food_reviews_item_input_dialog_event()
-        elif selected_value == "View all food items from an establishment":
-            self.read_all_food_items_establishment_input_dialog_event()
-        elif selected_value == "View all food items from an establishment that belong to a food type":
-            self.read_all_food_items_establishment_foodtype_input_dialog_event()
-        elif selected_value == "View all reviews made within a month for an establishment":
-            self.read_all_food_reviews_establishment_month_input_dialog_event()
-        elif selected_value == "View all reviews made within a month for an food item":
-            self.read_all_food_reviews_item_month_input_dialog_event()
-        elif selected_value == "View all establishments with a high average rating":
-            self.read_all_food_establishments_highrating_input_dialog_event()
-        elif selected_value == "View all food items from an establishment arranged according to price":
-            self.read_all_food_items_establishment_orderprice_input_dialog_event()
-        elif selected_value == "Search food items from any establishment based on a given price range":
-            self.read_all_food_items_any_establishment_pricerange_input_dialog_event()
-        elif selected_value == "Search food items from establishment based on a given food type":
-            self.read_all_food_items_any_establishment_foodtype_input_dialog_event()
-        elif selected_value == "Search food items from any establishment based on a given price range AND food type":
-            self.read_all_food_items_any_establishment_pricerange_foodtype_input_dialog_event()
+        print(selected_value)
 
     # Food Establishment Inputs
     def create_food_establishment_input_dialog_event(self):
@@ -395,10 +375,6 @@ class App(customtkinter.CTk):
             print("Food name input was canceled")
     
     # Food Review Inputs
-    
-    # User Inputs
-    
-    # Summary Report Inputs
 
     
         

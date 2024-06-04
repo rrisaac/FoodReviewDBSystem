@@ -395,13 +395,74 @@ class App(customtkinter.CTk):
             print("Food name input was canceled")
     
     # Food Review Inputs
+    def create_food_review_input_dialog_event(self):
+        print("wait")
+        
+    def read_all_food_reviews_input_dialog_event(self):
+        print("wait")
+    
+    def read_certain_food_review_input_dialog_event(self):
+        print("wait")
+    
+    def update_food_review_input_dialog_event(self):
+        print("wait")
+    
+    def delete_food_review_input_dialog_event(self):
+        print("wait")
     
     # User Inputs
+    def create_user_input_dialog_event(self):
+        print("wait")
+        
+    def read_all_users_input_dialog_event(self):
+        print("wait")
+    
+    def read_certain_user_input_dialog_event(self):
+        print("wait")
+    
+    def update_user_input_dialog_event(self):
+        print("wait")
+    
+    def delete_user_input_dialog_event(self):
+        print("wait")
     
     # Summary Report Inputs
-
+    def read_all_food_establishments_input_dialog_event(self):
+        print("wait")
     
-        
+    def read_all_food_reviews_establishment_input_dialog_event(self):
+        print("wait")
+    
+    def read_all_food_reviews_item_input_dialog_event(self):
+        print("wait")
+    
+    def read_all_food_items_establishment_input_dialog_event(self):
+        print("wait")
+    
+    def read_all_food_items_establishment_foodtype_input_dialog_event(self):
+        print("wait")
+    
+    def read_all_food_reviews_establishment_month_input_dialog_event(self):
+        print("wait")
+    
+    def read_all_food_reviews_item_month_input_dialog_event(self):
+        print("wait")
+    
+    def read_all_food_establishments_highrating_input_dialog_event(self):
+        print("wait")
+    
+    def read_all_food_items_establishment_orderprice_input_dialog_event(self):
+        print("wait")
+    
+    def read_all_food_items_any_establishment_pricerange_input_dialog_event(self):
+        print("wait")
+    
+    def read_all_food_items_any_establishment_foodtype_input_dialog_event(self):
+        print("wait")
+    
+    def read_all_food_items_any_establishment_pricerange_foodtype_input_dialog_event(self):
+        print("wait")
+
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
 

@@ -124,7 +124,7 @@ def read_certain_food_reviews(connection, food_name, user_username, establishmen
         # Cursor takes in a query, and an array of parameters
         cursor.execute(query, tuple(params))
         foodreviews = cursor.fetchall()
-
+        print(foodreviews)
         # If foodreviews exist
         if foodreviews:
             for foodreview in foodreviews:

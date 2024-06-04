@@ -325,7 +325,18 @@ class App(customtkinter.CTk):
             # Insert process here
         else:
             print("Establishment name input was canceled")
-        
+
+    def buildColumns(self, num):
+        columns = []
+        for i in range(num):
+            column_name = f"Column{i+1}"
+            columns.append(column_name)
+        return columns
+    
+    def buildHeaders(self, columns, headers):
+        for x in range(len(columns)):
+            self.table.heading(columns[x], text=headers[x])
+    
     def read_all_food_establishments_input_dialog_event(self):
         # Insert process here
         tabledata = food_establishment.read_all_food_establishments(self.connection)
@@ -337,17 +348,17 @@ class App(customtkinter.CTk):
         else:
             if self.table:
                 self.table.destroy()
-            
+            query = tabledata[0]
+            data = tabledata[1]
+            columns = self.buildColumns(len(data[0]))
+
             # Create the Treeview table
-            self.table = ttk.Treeview(self.inner_frame, columns=("Column1", "Column2", "Column3"), show="headings")
+            self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
             
             # Define the headings for each column
-            self.table.heading("Column1", text="Establishment ID")
-            self.table.heading("Column2", text="Establishment Name")
-            self.table.heading("Column3", text="Establishment Average Rating")
-            
+            self.buildHeaders(columns, ["Establishment ID", "Establishment Name", "Establishment Average Rating"])
             # Insert the fetched data into the table
-            for row in tabledata:
+            for row in data:
                 self.table.insert("", "end", values=row)
             
             # Pack the table into the inner_frame

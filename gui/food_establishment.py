@@ -22,7 +22,8 @@ def read_all_food_establishments(connection):
     print("\nReading all Food Establishments...")
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM foodEstablishment;")
+        query = "SELECT * FROM foodEstablishment;"
+        cursor.execute(query)
         establishments = cursor.fetchall()
         
         # If there are instances...
@@ -32,7 +33,7 @@ def read_all_food_establishments(connection):
                 print(establishment)
             print("\n")
         
-            return(establishments)
+            return (query, establishments)
         # Else, empty set...
         else:
             print("\nNo Food Establishments found.\n")

@@ -494,7 +494,7 @@ class App(customtkinter.CTk):
         
     def read_all_food_items_input_dialog_event(self):
         # Insert process here
-        tabledata = food_item.read_all_food_establishments(self.connection)
+        tabledata = food_item.read_all_food_items(self.connection)
         print(tabledata)
         
         if tabledata is None:
@@ -530,10 +530,6 @@ class App(customtkinter.CTk):
         food_name = food_name_dialog.get_input()
         
         if food_name:
-            food_name_dialog = customtkinter.CTkInputDialog(text="Input food name:", title="Read Certain Food Item/s")
-            food_name = food_name_dialog.get_input()
-            print(f"Food name: {food_name}")
-            
             # Insert process here
             tabledata = food_item.read_certain_food_items(self.connection, food_name)
             

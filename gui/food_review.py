@@ -17,7 +17,7 @@ def create_food_review(connection, review_message, review_date, review_rating, f
             result = cursor.fetchone()
             if result is None:
                 print("Please input a valid establishment name.")
-                return
+                return (query % (establishment_name,))
             review_type = 0 # If there is no food
             query = """
             INSERT INTO foodReview(review_type, review_message, review_date, review_rating, review_foodestablishmentid, review_userid)
@@ -29,12 +29,22 @@ def create_food_review(connection, review_message, review_date, review_rating, f
             """
             params = [review_type, review_message, review_date, review_rating, establishment_name, user_username]
         else:
-            cursor.execute("SELECT food_name FROM foodItem WHERE food_foodestablishmentid = (SELECT establishment_id from foodestablishment WHERE establishment_name = %s);", (establishment_name,))
+            query = """
+            SELECT food_name
+            FROM foodItem
+            WHERE food_foodestablishmentid = (
+                SELECT establishment_id
+                FROM foodestablishment
+                WHERE establishment_name = %s
+            );
+            """
+            cursor.execute(query, (establishment_name,))
+
             result = cursor.fetchone()
             print(result)
             if result is None:
                 print("Please input a food name that is associated to an establishment.")
-                return
+                return (query % (establishment_name,))
             
             review_type = 1  # If both food and establishment is specified
             query = """
@@ -51,7 +61,7 @@ def create_food_review(connection, review_message, review_date, review_rating, f
         project.update_average_rating(connection)
         connection.commit()
         print("Food review created successfully.")
-    
+        return(query % tuple(params))
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to create Food Review.\n")
@@ -62,7 +72,9 @@ def read_all_food_reviews(connection):
     try: 
         print("\nReading all food reviews...")
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM foodreview;")
+        query = "SELECT * FROM foodreview;"
+        cursor.execute(query)
+
         foodreviews = cursor.fetchall()
         if foodreviews:
             print("\n")
@@ -71,8 +83,10 @@ def read_all_food_reviews(connection):
                     print("\n")
         else:
             print("There are currently no food reviews.")
-        print("Food reviews read successfully.")
+            return (query, [])
         
+        print("Food reviews read successfully.")
+        return (query, foodreviews)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to read Food Reviews.\n")
@@ -117,7 +131,9 @@ def read_certain_food_reviews(connection, food_name, user_username, establishmen
                 print(foodreview)
         else:
             print("There exist no food reviews.")
-
+            return (query, [])
+        
+        return(query % tuple(params), foodreviews)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to retreive a certain food review")
@@ -128,37 +144,45 @@ def update_food_review(connection, food_name, user_username, establishment_name,
         cursor = connection.cursor()
         print("\nUpdating food review...")
         # Verify if the user exists
-        cursor.execute("SELECT user_id FROM user WHERE user_username = %s", (user_username,))
+        query = "SELECT user_id FROM user WHERE user_username = %s"
+        cursor.execute(query, (user_username,))
         user_id = cursor.fetchone()
         if user_id is None:
             print("User does not exist")
-            return
+            return (query % (user_username,))
 
         
         # This checks whether an additional query is needed or not.
         if food_name and food_name.strip() != "":
             # Verify if the establishment and the food item exist
-            cursor.execute("SELECT establishment_id FROM foodEstablishment WHERE establishment_name = %s", (establishment_name,))
+            query = "SELECT establishment_id FROM foodEstablishment WHERE establishment_name = %s"
+            params = [establishment_name]
+            cursor.execute(query, tuple(params))
+
             establishment_id = cursor.fetchone()
             if establishment_id is None:
                 print("Establishment does not exist")
-                return
+                return (query % tuple(params))
             # Check if food exists
-            cursor.execute("SELECT food_id FROM foodItem WHERE food_name = %s AND food_foodestablishmentid = %s", (food_name, establishment_id[0]))
+            query = "SELECT food_id FROM foodItem WHERE food_name = %s AND food_foodestablishmentid = %s"
+            params = [food_name, establishment_id[0]]
+            cursor.execute(query, tuple(params))
             food_id = cursor.fetchone()
             if food_id is None:
                 print("Food Item does not exist in the specified establishment")
-                return
+                return (query % tuple(params))
 
             added_query = "(review_fooditemid = (SELECT food_id FROM foodItem WHERE food_name = %s)"
             params = [input_value, user_username, review_date, 1, food_name]
         else:
             # Check if the establishment exists
-            cursor.execute("SELECT establishment_name FROM foodEstablishment WHERE establishment_name = %s", (establishment_name,))
+            query = "SELECT establishment_name FROM foodEstablishment WHERE establishment_name = %s"
+            params = [establishment_name]
+            cursor.execute(query, tuple(params))
             result = cursor.fetchone()
             if result is None:
                 print("Please input a valid establishment name.")
-                return
+                return (query % tuple(params))
 
             added_query = "(review_foodestablishmentid = (SELECT establishment_id FROM foodEstablishment WHERE establishment_name = %s))"
             params = [input_value, user_username, review_date, 0, establishment_name]
@@ -182,11 +206,12 @@ def update_food_review(connection, food_name, user_username, establishment_name,
         if cursor.rowcount == 0:
             print("No rows were affected.")
             connection.commit()
-            return
+            return (query % tuple(params))
         
         project.update_average_rating(connection)
         connection.commit()
         print("Food review updated successfully.")
+        return (query % tuple(params))
     
     except mysql.connector.Error as err:
         print("\nError:", err)
@@ -225,11 +250,12 @@ def delete_food_review(connection, user_username, review_date, establishment_nam
         if cursor.rowcount == 0:
             print("No deletions occurred.")
             connection.commit()
-            return
+            return (query % tuple(params))
 
         project.update_average_rating(connection)
         connection.commit()
         print("Food review deleted successfully.")
+        return (query % tuple(params))
     
     except mysql.connector.Error as err:
         print("\nError:", err)

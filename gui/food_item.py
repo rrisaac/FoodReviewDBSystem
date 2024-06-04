@@ -8,8 +8,6 @@ import project
 def create_food_item(connection, establishment_name, food_name, food_type, price):
     try:
         # Convert price to a float and validate the range
-        if not (-9999.99 <= price <= 9999.99):
-            raise ValueError("Price out of valid range")
         
         query = """INSERT INTO foodItem (food_name, food_type, food_price, food_foodestablishmentid) VALUES (
         %s,
@@ -119,12 +117,14 @@ def delete_food_item(connection, food_name):
     try:
         print("\nDeleting food item...")
         cursor = connection.cursor()
-        cursor.execute("DELETE FROM foodItem WHERE food_name = %s;", (food_name,))
+        query = "DELETE FROM foodItem WHERE food_name = %s;"
+        cursor.execute(query, (food_name,))
+
         project.update_average_rating(connection)
         connection.commit()
         
         print("\nFood Item with name {} deleted successfully!\n".format(food_name))
-        
+        return(query %(food_name,))
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to delete Food Item.\n")

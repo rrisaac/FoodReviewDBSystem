@@ -10,11 +10,12 @@ def create_user(connection, user_username, user_password):
         print("\nCreating user...")
         cursor = connection.cursor()
         # Input username and password: 
-        cursor.execute("INSERT INTO user (user_username, user_password) VALUES (%s, %s);",
-                       (user_username, user_password))
+        query = "INSERT INTO user (user_username, user_password) VALUES (%s, %s);"
+        params = (user_username, user_password)
+        cursor.execute(query, params)
         connection.commit() 
         print("\nUser '{}' created successfully!\n".format(user_username))
-
+        return (query % params)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to create User.\n")
@@ -24,7 +25,9 @@ def read_all_users(connection):
     print("\nReading all users...")
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM user;")
+        query = "SELECT * FROM user;"
+        cursor.execute(query)
+
         users = cursor.fetchall()
         
         # Check if there are users:
@@ -37,6 +40,8 @@ def read_all_users(connection):
         # No users:
         else:
             print("\nNo users found.\n")
+            return (query)
+        return (query, users)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch users.\n")
@@ -46,7 +51,10 @@ def read_certain_user(connection, user_username):
     print('\nReading all Users with username: "' + user_username + '"...')
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM user WHERE user_username = %s;", (user_username,))
+        query = "SELECT * FROM user WHERE user_username = %s;"
+        params = (user_username,)
+        cursor.execute(query, params)
+
         users = cursor.fetchall()
         
         # If user exists:
@@ -59,6 +67,8 @@ def read_certain_user(connection, user_username):
         # If user in selected query is not found:
         else:
             print("\nNo user found with the username '{}'.\n".format(user_username))
+            return (query % params, [])
+        return (query % (params), users)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch user.")
@@ -70,27 +80,34 @@ def update_user(connection, input_attribute, user_username, input_username):
         cursor = connection.cursor()
 
         # First, we validate if the user exists to ensure that we are not updating nothing.
-        cursor.execute("SELECT user_username FROM user WHERE user_username = %s;", (user_username,))
+        query = "SELECT user_username FROM user WHERE user_username = %s;"
+        params = (user_username,)
+        cursor.execute(query, params)
         old_value_result = cursor.fetchone()
         
         if old_value_result is None:
             print("\nUser '{}' does not exist.\n".format(user_username))
-            return # Return if food item is non-existent.
+            return (query % params)# Return if food item is non-existent.
         
         old_value = old_value_result[0] # If old_value exists, proceed to get the old_value
         
-        cursor.execute("UPDATE user SET {} = %s WHERE user_username = %s;".format(
+        query = "UPDATE user SET {} = %s WHERE user_username = %s;".format(
             input_attribute # Attribute to be set
-        ), (
-        input_username, # Value to be set
-        user_username)) # Username of the user to be updated
+        )
+        params = (
+            input_username, # Value to be set
+            user_username # Username of the user to be updated
+        )
+        cursor.execute(query, params)
+
+
 
         project.update_average_rating(connection)
         connection.commit() # Ensure that the update is saved
 
         # Print update details:
         print("\nUser user_username updated from '{}' to '{}' successfully!\n".format(user_username, input_username))
-
+        return (query % params)
     except mysql.connector.Error as err:
         print("\nError: ", err)
         print("Failed to update user.")
@@ -102,13 +119,17 @@ def delete_user(connection, user_username):
         cursor=connection.cursor()
 
         # Validate if user exists
-        cursor.execute("SELECT user_username FROM user WHERE user_username = %s;", (user_username,))
+        query = "SELECT user_username FROM user WHERE user_username = %s;"
+        params = (user_username,)
+        cursor.execute(query, params)
         if cursor.fetchone() is None:
             print("\nUser '{}' does not exist.\n".format(user_username))
-            return
+            return (query % params)
         
         # Delete statement
-        cursor.execute("DELETE from user WHERE user_username= %s;", (user_username,))
+        query = "DELETE from user WHERE user_username= %s;"
+        params = (user_username,)
+        cursor.execute(query, params)
         rows_affected = cursor.rowcount  # Get the number of rows affected by the delete operation
         project.update_average_rating(connection)
         connection.commit()
@@ -118,6 +139,7 @@ def delete_user(connection, user_username):
             print(f"\nUser '{user_username}' successfully deleted!")
         else:
             print(f"\nUser '{user_username}' does not exist or has already been deleted.")
+        return (query % params)
     except mysql.connector.Error as err:
         print("\nError: ", err)
         print("Failed to update user.")

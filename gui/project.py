@@ -247,11 +247,11 @@ class App(customtkinter.CTk):
         elif selected_value == "Read All Food Items":
             self.read_all_food_items_input_dialog_event()
         elif selected_value == "Read Certain Food Item/s":
-            self.read_certain_food_establishment_input_dialog_event()
+            self.read_certain_food_items_input_dialog_event()
         elif selected_value == "Update Food Item":
-            self.update_food_establishment_input_dialog_event()
+            self.update_food_item_input_dialog_event()
         elif selected_value == "Delete Food Item":
-            self.delete_food_establishment_input_dialog_event()
+            self.delete_food_item_input_dialog_event()
         
     def dynamic_command_food_review(self):
         selected_value = self.optionmenu_3.get()
@@ -386,14 +386,15 @@ class App(customtkinter.CTk):
             attribute = attribute_dialog.get_input()
             
             if attribute:
-                value_dialog = customtkinter.CTkInputDialog(text="Input attribute to update:", title="Update Food Establishment")         
+                value_dialog = customtkinter.CTkInputDialog(text="Input value to update:", title="Update Food Establishment")         
                 value = value_dialog.get_input()
                     
                 if value: 
                     print(f"Establishment Name: {establishment_name}")
                     print(f"Attribute: {attribute}")
                     print(f"Value: {value}")
-                    # Insert process here
+                    query = food_establishment.update_food_establishment(self.connection, establishment_name, attribute, value)
+                    print(query)
                 else:
                     print("Value input was canceled")
             else:
@@ -446,7 +447,7 @@ class App(customtkinter.CTk):
         
     def read_all_food_items_input_dialog_event(self):
         # Insert process here
-        food_establishment.read_all_food_establishments(self.connection)
+        food_item.read_all_food_items(self.connection)
     
     def read_certain_food_items_input_dialog_event(self):
         food_name_dialog = customtkinter.CTkInputDialog(text="Input food name:", title="Read Certain Food Item/s")
@@ -477,7 +478,8 @@ class App(customtkinter.CTk):
                     print(f"Establishment Name: {food_name}")
                     print(f"Attribute: {attribute}")
                     print(f"Value: {value}")
-                    # Insert process here
+                    query = food_item.update_food_item(self.connection, food_name, attribute, value)
+                    print(query)
                 else:
                     print("Value input was canceled")
             else:

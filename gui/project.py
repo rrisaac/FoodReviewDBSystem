@@ -351,22 +351,29 @@ class App(customtkinter.CTk):
         tabledata = food_establishment.read_all_food_establishments(self.connection)
         print(tabledata)
         
-        # Create the Treeview table
-        self.table = ttk.Treeview(self.inner_frame, columns=("Column1", "Column2", "Column3"), show="headings")
-        
-        # Define the headings for each column
-        self.table.heading("Column1", text="Establishment ID")
-        self.table.heading("Column2", text="Establishment Name")
-        self.table.heading("Column3", text="Establishment Average Rating")
-        
-        # Insert the fetched data into the table
-        for row in tabledata:
-            self.table.insert("", "end", values=row)
-        
-        # Pack the table into the inner_frame
-        self.table.pack(expand=True, fill='both')
-        
-        self.stretch_table()
+        if tabledata is None:
+            print('No output')
+        else:
+            # Clear existing items in the Treeview
+            for item in self.table.get_children():
+                self.table.delete(item)
+            
+            # Create the Treeview table
+            self.table = ttk.Treeview(self.inner_frame, columns=("Column1", "Column2", "Column3"), show="headings")
+            
+            # Define the headings for each column
+            self.table.heading("Column1", text="Establishment ID")
+            self.table.heading("Column2", text="Establishment Name")
+            self.table.heading("Column3", text="Establishment Average Rating")
+            
+            # Insert the fetched data into the table
+            for row in tabledata:
+                self.table.insert("", "end", values=row)
+            
+            # Pack the table into the inner_frame
+            self.table.pack(expand=True, fill='both')
+            
+            self.stretch_table()
         
     
     def read_certain_food_establishment_input_dialog_event(self):

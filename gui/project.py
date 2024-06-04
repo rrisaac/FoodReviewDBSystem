@@ -14,6 +14,10 @@ import food_item
 import food_review
 import summary_report
 import datetime
+import tkinter as tk
+from tkinter import ttk
+
+
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
@@ -187,11 +191,44 @@ class App(customtkinter.CTk):
                                                            command=self.dynamic_command_summary_report)
         self.string_input_button_5.grid(row=0, column=1, padx=30, pady=(20, 10))
         
+        self.table_frame = ttk.Frame(self)
+        self.table_frame.grid(row=2, column=1, columnspan=2, padx=(20, 20), pady=(0, 0), sticky="nsew")
+        # Create a canvas inside the frame
+        self.canvas = tk.Canvas(self.table_frame)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        # Add a scrollbar to the canvas
+        self.scrollbar = ttk.Scrollbar(self.table_frame, orient=tk.VERTICAL, command=self.canvas.yview)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        # Configure the canvas to use the scrollbar
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        # Create another frame inside the canvas
+        self.inner_frame = ttk.Frame(self.canvas)
+        self.canvas.create_window((0, 0), window=self.inner_frame, anchor="nw")
+        # Make the inner frame expand with the canvas
+        self.inner_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        # Create the table inside the inner frame
+        # self.table = CTkTable(self.inner_frame, row=30, column=5, width=250, hover=True)
+        # self.table.grid(row=0, column=0, padx=(20, 20), pady=(0, 0), sticky="nsew")
+        # Assuming self.inner_frame is already defined and is a valid Frame
         
-        # create table
-        self.table = CTkTable(self, row=30, column=5, width=250, hover=True)
-        self.table.grid(row=2, column=1, columnspan=2, padx=(20, 20), pady=(0, 0), sticky="nsew")
+
+        # Setting the column headings
+        # self.table.heading("Column1", text="Lexeme")
+        # self.table.heading("Column2", text="Classification")
+        # self.table.heading("Column3", text="Lexeme")
+        # self.table.heading("Column4", text="Classification")
+        # self.table.heading("Column5", text="Lexeme")
+        # self.table.heading("Column6", text="Classification")
+        # self.table.heading("Column7", text="Lexeme")
+        # self.table.heading("Column8", text="Classification")
+
+        #
         
+        
+        # # create table
+        # self.table = CTkTable(self, row=10, column=5, width=250, hover=True)
+        # self.table.grid(row=2, column=1, columnspan=2, padx=(20, 20), pady=(0, 0), sticky="nsew")
+                
 
         query = f"""
         SELECT * FROM foodItem
@@ -208,6 +245,7 @@ class App(customtkinter.CTk):
         # self.scaling_optionemenu.set("100%")
         self.optionmenu_1.set("Create Food Establishment")
         self.textbox.insert("0.0", "SQL Query\n" + query + "\n\n")
+       
         
     def dynamic_command_food_establishment(self):
         selected_value = self.optionmenu_1.get()
@@ -313,7 +351,22 @@ class App(customtkinter.CTk):
         tabledata = food_establishment.read_all_food_establishments(self.connection)
         print(tabledata)
         
-        self.populate_table(self.table, tabledata)
+        # Create the Treeview table
+        self.table = ttk.Treeview(self.inner_frame, columns=("Column1", "Column2", "Column3"), show="headings")
+        
+        # Define the headings for each column
+        self.table.heading("Column1", text="Establishment ID")
+        self.table.heading("Column2", text="Establishment Name")
+        self.table.heading("Column3", text="Establishment Average Rating")
+        
+        # Insert the fetched data into the table
+        for row in tabledata:
+            self.table.insert("", "end", values=row)
+        
+        # Pack the table into the inner_frame
+        self.table.pack(expand=True, fill='both')
+        
+        self.stretch_table()
         
     
     def read_certain_food_establishment_input_dialog_event(self):
@@ -857,14 +910,17 @@ class App(customtkinter.CTk):
         update_average_rating(connection)
         connection.commit()
         cursor.close()
-        
-    def populate_table(self, table, data):
-        # Clear existing data in the table
-        # self.table.clear()  # Assuming there's a method to clear the table
-    
-    # Add data to the table
-        for row in data:
-            self.table.add_row(row)  # Assuming there's a method to add rows to the table
+            
+    def stretch_table(self):
+        #Setting the columns to stretch and fill the available space
+        for col in self.table["columns"]:
+            self.table.column(col, width=100, stretch=True)
+
+        # Placing the table to expand and fill available space
+        self.table.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Ensure the inner_frame expands with its parent widget if needed
+        self.inner_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
 
 if __name__ == "__main__":

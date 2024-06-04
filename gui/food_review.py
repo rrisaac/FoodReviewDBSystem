@@ -143,7 +143,7 @@ def update_food_review(connection, food_name, user_username, establishment_name,
             if establishment_id is None:
                 print("Establishment does not exist")
                 return
-
+            # Check if food exists
             cursor.execute("SELECT food_id FROM foodItem WHERE food_name = %s AND food_foodestablishmentid = %s", (food_name, establishment_id[0]))
             food_id = cursor.fetchone()
             if food_id is None:

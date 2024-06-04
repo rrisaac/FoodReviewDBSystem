@@ -13,10 +13,52 @@ import user
 import food_item
 import food_review
 import summary_report
-
+import datetime
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
+def update_average_rating(connection):
+        try:
+            cursor = connection.cursor()
+
+            # Calculate average rating for each establishment
+            cursor.execute("""
+                SELECT review_foodestablishmentid, AVG(review_rating) AS avg_rating
+                FROM foodReview
+                WHERE review_type = 0
+                GROUP BY review_foodestablishmentid
+            """)
+            establishment_ratings = cursor.fetchall()
+
+            # Update average rating for each establishment
+            for establishment_id, avg_rating in establishment_ratings:
+                cursor.execute("""
+                    UPDATE foodEstablishment
+                    SET establishment_averagerating = %s
+                    WHERE establishment_id = %s
+                """, (avg_rating, establishment_id))
+
+            cursor.execute("""
+                SELECT review_fooditemid, AVG(review_rating) AS avg_rating
+                FROM foodReview
+                WHERE review_type = 1
+                GROUP BY review_fooditemid
+            """)
+            fooditem_ratings = cursor.fetchall()
+
+            # Update average rating for each food item
+            for food_id, avg_rating in fooditem_ratings:
+                cursor.execute("""
+                    UPDATE foodItem
+                    SET food_averagerating = %s
+                    WHERE food_id = %s
+                """, (avg_rating, food_id))
+
+            print("Average ratings updated successfully!")
+
+        except mysql.connector.Error as err:
+            connection.rollback()
+            print("Error updating average ratings:", err)
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -245,6 +287,15 @@ class App(customtkinter.CTk):
         elif selected_value == "Search food items from any establishment based on a given price range AND food type":
             self.read_all_food_items_any_establishment_pricerange_foodtype_input_dialog_event()
 
+    # Date Validation
+    def validate_date(date_str):
+        try:
+            datetime.datetime.strptime(date_str, "%Y-%m-%d")
+            return True
+        except ValueError:
+            return False
+    
+
     # Food Establishment Inputs
     def create_food_establishment_input_dialog_event(self):
         establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name to create:", title="Create Food Establishment")
@@ -394,74 +445,380 @@ class App(customtkinter.CTk):
     
     # Food Review Inputs
     def create_food_review_input_dialog_event(self):
-        print("wait")
+        user_username_dialog = customtkinter.CTkInputDialog(text="Input user name:", title="Create Food Review")
+        user_username = user_username_dialog.get_input()
+        if user_username:
+            establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Create Food Review")
+            establishment_name = establishment_name_dialog.get_input()
+            if establishment_name:
+                food_name_dialog = customtkinter.CTkInputDialog(text="Input food name (leave blank if none):", title="Create Food Review")
+                food_name = food_name_dialog.get_input()
+                if food_name or food_name.strip() == "":
+                    rating_dialog = customtkinter.CTkInputDialog(text="Input rating (between 1.00 and 5.00):", title="Create Food Review")
+                    rating = rating_dialog.get_input()
+                    while True:
+                        try:
+                            rating_float = float(rating)
+                            if rating_float >= 1.00 and rating_float <= 5.00:
+                                break
+                            else:
+                                rating_dialog = customtkinter.CTkInputDialog(text="Invalid rating. Please enter a number between 1.00 and 5.00.", title="Create Food Review")
+                                rating = rating_dialog.get_input()
+                                continue
+                        except ValueError:
+                            rating_dialog = customtkinter.CTkInputDialog(text="Invalid rating. Please enter a number between 1.00 and 5.00.", title="Create Food Review")
+                            rating = rating_dialog.get_input()
+                            continue
+                    comment_dialog = customtkinter.CTkInputDialog(text="Input comment:", title="Create Food Review")
+                    comment = comment_dialog.get_input()
+                    if comment:
+                        date_dialog = customtkinter.CTkInputDialog(text="Input date (yyyy-mm-dd):", title="Create Food Review")
+                        review_date = date_dialog.get_input()
+                        while True:
+                            if review_date.strip() == "" or review_date is None:
+                                break
+                            elif not App.validate_date(review_date):
+                                review_date = customtkinter.CTkInputDialog(text="Invalid date format. Please enter in YYYY-MM-DD format.", title="Create Food Review").get_input()
+                                continue
+                            else:
+                                break
+                        print(f"User Name: {user_username}")
+                        print(f"Establishment Name: {establishment_name}")
+                        print(f"Food name: {food_name}")
+                        print(f"Rating: {rating}")
+                        print(f"Comment: {comment}")
+                        print(f"Date: {review_date}")
+                        # Insert the thing here
+                        food_review.create_food_review(self.connection, comment, review_date, rating, food_name, establishment_name, user_username)
+
+                    else:
+                        print("Comment input was canceled")
+                else:
+                    print("Food name input was canceled")
+            else:
+                print("Establishment name input was canceled")
+        else:
+            print("User name input was canceled")
+
+
+
+
         
     def read_all_food_reviews_input_dialog_event(self):
         # Insert process here
         food_review.read_all_food_reviews(self.connection)
     
     def read_certain_food_review_input_dialog_event(self):
-        print("wait")
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name to read:", title="Read Certain Food Review/s")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            food_name_dialog = customtkinter.CTkInputDialog(text="Input food name to read:", title="Read Certain Food Review/s")
+            food_name = food_name_dialog.get_input()
+            if food_name:
+                username_dialog = customtkinter.CTkInputDialog(text="Input username to read:", title="Read Certain Food Review/s")
+                username = username_dialog.get_input()
+                if username:
+                    date_dialog = customtkinter.CTkInputDialog(text="Input date to read (yyyy-mm-dd):", title="Read Certain Food Review/s")
+                    review_date = date_dialog.get_input()
+                    while True:
+                        if review_date.strip() == "" or review_date is None:
+                            break
+                        elif not App.validate_date(review_date):
+                            review_date = customtkinter.CTkInputDialog(text="Invalid date format. Please enter in YYYY-MM-DD format.", title="Read Certain Food Review/s").get_input()
+                            continue
+                        else:
+                            break
+                    print(f"Establishment Name: {establishment_name}")
+                    print(f"Food name: {food_name}")
+                    print(f"User Name: {username}")
+                    print(f"Date: {review_date}")
+                    # Insert the thing here
+                    food_review.read_certain_food_reviews(self.connection, food_name, username, establishment_name, review_date)
+                    
+                else:
+                    print("Username input was canceled")
+            else:
+                print("Food name input was canceled")
+        else:
+            print("Establishment name input was canceled")
+
     
     def update_food_review_input_dialog_event(self):
-        print("wait")
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name to update:", title="Update Food Review")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            food_name_dialog = customtkinter.CTkInputDialog(text="Input food name to update (leave blank if none):", title="Update Food Review")
+            food_name = food_name_dialog.get_input()
+            if food_name or food_name == "":
+                username_dialog = customtkinter.CTkInputDialog(text="Input username to update:", title="Update Food Review")
+                username = username_dialog.get_input()
+                if username:
+                    date_dialog = customtkinter.CTkInputDialog(text="Input review date (YYYY-MM-DD):", title="Update Food Review")
+                    date_str = date_dialog.get_input()
+                    while True:
+                        if date_str.strip() == "" or date_str is None:
+                            break
+                        elif not App.validate_date(date_str):
+                            date_str = customtkinter.CTkInputDialog(text="Invalid date format. Please enter in YYYY-MM-DD format.", title="Update Food Review").get_input()
+                            continue
+                        else:
+                            break
+                    input_attribute_dialog = customtkinter.CTkInputDialog(text="Input attribute to change:", title="Update Food Review")
+                    input_attribute = input_attribute_dialog.get_input()
+                    if input_attribute:
+                        input_value_dialog = customtkinter.CTkInputDialog(text="Input new value:", title="Update Food Review")
+                        input_value = input_value_dialog.get_input()
+                        if input_value:
+                            food_review.update_food_review(self.connection, food_name, username, establishment_name, date_str, input_attribute, input_value)
+                            print("Food review updated successfully.")
+                        else:
+                            print("Input value input was canceled")
+                    else:
+                        print("Input attribute input was canceled")
+                else:
+                    print("Username input was canceled")
+            else:
+                print("Food name input was canceled")
+        else:
+            print("Establishment name input was canceled")
+
+
+
     
     def delete_food_review_input_dialog_event(self):
-        print("wait")
+        user_username_dialog = customtkinter.CTkInputDialog(text="Enter the username of the user who made the review (leave blank if none):", title="Delete Food Review")
+        user_username = user_username_dialog.get_input()
+        while True:
+            review_date_dialog = customtkinter.CTkInputDialog(text="Input review date (YYYY-MM-DD; leave blank if none):", title="Delete Food Review")
+            review_date = review_date_dialog.get_input()
+
+            if review_date.strip() == "" or review_date is None:
+                break
+            elif not App.validate_date(review_date):
+                review_date_dialog = customtkinter.CTkInputDialog(text="Invalid date format. Please enter in YYYY-MM-DD format.", title="Delete Food Review")
+                continue
+            else:
+                break
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Enter establishment name (leave blank if none):", title="Delete Food Review")
+        establishment_name = establishment_name_dialog.get_input()
+        food_name_dialog = customtkinter.CTkInputDialog(text="Enter food name (leave blank if none):", title="Delete Food Review")
+        food_name = food_name_dialog.get_input()
+        food_review.delete_food_review(self.connection, user_username, review_date, establishment_name, food_name)
     
     # User Inputs
     def create_user_input_dialog_event(self):
-        print("wait")
+        user_username_dialog = customtkinter.CTkInputDialog(text="Input username:", title="Create User")
+        user_username = user_username_dialog.get_input()
+        if user_username:
+            user_password_dialog = customtkinter.CTkInputDialog(text="Input password:", title="Create User")
+            user_password = user_password_dialog.get_input()
+            if user_password:
+                user.create_user(self.connection, user_username, user_password)
+            else:
+                print("Input password input was canceled")
+        else:
+            print("Input username input was canceled")
+
         
     def read_all_users_input_dialog_event(self):
         # Insert process here
         user.read_all_users(self.connection)
     
     def read_certain_user_input_dialog_event(self):
-        print("wait")
+        user_username_dialog = customtkinter.CTkInputDialog(text="Input username:", title="Read Certain User")
+        user_username = user_username_dialog.get_input()
+        if user_username:
+            user.read_certain_user(self.connection, user_username)
+        else:
+            print("Input username input was canceled")
     
     def update_user_input_dialog_event(self):
-        print("wait")
+        input_attribute_dialog = customtkinter.CTkInputDialog(text="Input attribute to be changed: ", title="Update User")
+        input_attribute = input_attribute_dialog.get_input()
+        if input_attribute:
+            user_username_dialog = customtkinter.CTkInputDialog(text="Input username of the user to be updated: ", title="Update User")
+            user_username = user_username_dialog.get_input()
+            if user_username:
+                input_username_dialog = customtkinter.CTkInputDialog(text=f"Input new {input_attribute} value of {user_username}: ", title="Update User")
+                input_username = input_username_dialog.get_input()
+                if input_username:
+                    user.update_user(self.connection, input_attribute, user_username, input_username)
+                else:
+                    print("Input username input was canceled")
+            else:
+                print("Input username input was canceled")
+        else:
+            print("Input attribute input was canceled")
+
     
     def delete_user_input_dialog_event(self):
-        print("wait")
+        user_username_dialog = customtkinter.CTkInputDialog(text="Input username:", title="Delete User")
+        user_username = user_username_dialog.get_input()
+        if user_username:
+            user.delete_user(self.connection, user_username)
+        else:
+            print("Input username input was canceled")
+
+
     
     # Summary Report Inputs
     def read_all_food_establishments_input_dialog_event_2(self):
-        print("wait")
+        summary_report.read_all_food_establishments(self.connection)
     
     def read_all_food_reviews_establishment_input_dialog_event(self):
-        print("wait")
-    
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Reviews for an Establishment")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            summary_report.read_all_food_reviews_establishment(self.connection, establishment_name)
+        else:
+            print("Input establishment name input was canceled")
+
     def read_all_food_reviews_item_input_dialog_event(self):
-        print("wait")
-    
+        food_name_dialog = customtkinter.CTkInputDialog(text="Input food name:", title="Read All Food Reviews for a Food Item")
+        food_name = food_name_dialog.get_input()
+        if food_name:
+            summary_report.read_all_food_reviews_item(self.connection, food_name)
+        else:
+            print("Input food name input was canceled")
+
     def read_all_food_items_establishment_input_dialog_event(self):
-        print("wait")
-    
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Items for an Establishment")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            summary_report.read_all_food_items_establishment(self.connection, establishment_name)
+        else:
+            print("Input establishment name input was canceled")
+
     def read_all_food_items_establishment_foodtype_input_dialog_event(self):
-        print("wait")
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Items for an Establishment")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            food_type_dialog = customtkinter.CTkInputDialog(text="Input food type:", title="Read All Food Items for an Establishment")
+            food_type = food_type_dialog.get_input()
+            if food_type:
+                summary_report.read_all_food_items_establishment_foodtype(self.connection, establishment_name, food_type)
+            else:
+                print("Input food type input was canceled")
+        else:
+            print("Input establishment name input was canceled")
+
     
     def read_all_food_reviews_establishment_month_input_dialog_event(self):
-        print("wait")
-    
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Reviews for an Establishment within a Month")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            month_dialog = customtkinter.CTkInputDialog(text="Input month of reviews to search in {}: ".format(establishment_name), title="Read All Food Reviews for an Establishment within a Month")
+            month = month_dialog.get_input()
+            if month:
+                summary_report.read_all_food_reviews_establishment_month(self.connection, establishment_name, month)
+            else:
+                print("Input month input was canceled")
+        else:
+            print("Input establishment name input was canceled")
+
     def read_all_food_reviews_item_month_input_dialog_event(self):
-        print("wait")
+        food_item_dialog = customtkinter.CTkInputDialog(text="Input food item:", title="Read All Food Reviews for a Food Item within a Month")
+        food_item = food_item_dialog.get_input()
+        if food_item:
+            month_dialog = customtkinter.CTkInputDialog(text=f"Input month of reviews about {food_item}: ", title="Read All Food Reviews for a Food Item within a Month")
+            month = month_dialog.get_input()
+            if month:
+                summary_report.read_all_food_reviews_item_month(self.connection, food_item, month)
+            else:
+                print("Input month input was canceled")
+        else:
+            print("Input food item input was canceled")
+
     
     def read_all_food_establishments_highrating_input_dialog_event(self):
-        print("wait")
+        summary_report.read_all_food_establishments_highrating(self.connection)
+
+
     
     def read_all_food_items_establishment_orderprice_input_dialog_event(self):
-        print("wait")
+        dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="View All Food Items from an Establishment Arranged According to Price")
+        establishment_name = dialog.get_input()
+        if establishment_name:
+            summary_report.read_all_food_items_establishment_orderprice(self.connection, establishment_name)
+        else:
+            print("Input establishment name input was canceled")
     
     def read_all_food_items_any_establishment_pricerange_input_dialog_event(self):
-        print("wait")
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Search Food Items from any Establishment based on a given price range")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            min_price_dialog = customtkinter.CTkInputDialog(text="Input minimum price:", title="Search Food Items from any Establishment based on a given price range")
+            min_price = min_price_dialog.get_input()
+            if min_price:
+                max_price_dialog = customtkinter.CTkInputDialog(text="Input maximum price:", title="Search Food Items from any Establishment based on a given price range")
+                max_price = max_price_dialog.get_input()
+                if max_price:
+                    try:
+                        min_price = float(min_price)
+                        max_price = float(max_price)
+                        if min_price > max_price:
+                            print("Minimum price must be less than or equal to maximum price")
+                        elif max_price > 9999.99:
+                            print("Maximum price must be less than or equal to 9999.99")
+                        else:
+                            summary_report.read_all_food_items_any_establishment_pricerange(self.connection, establishment_name, min_price, max_price)
+                    except ValueError:
+                        print("Please enter a valid number for price")
+                else:
+                    print("Input maximum price input was canceled")
+            else:
+                print("Input minimum price input was canceled")
+        else:
+            print("Input establishment name input was canceled")
+
     
     def read_all_food_items_any_establishment_foodtype_input_dialog_event(self):
-        print("wait")
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Search Food Items from establishment based on a given food type")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            food_type_dialog = customtkinter.CTkInputDialog(text="Input food type:", title="Search Food Items from establishment based on a given food type")
+            food_type = food_type_dialog.get_input()
+            if food_type:
+                summary_report.read_all_food_items_any_establishment_foodtype(self.connection, establishment_name, food_type)
+            else:
+                print("Input food type input was canceled")
+        else:
+            print("Input establishment name input was canceled")
     
     def read_all_food_items_any_establishment_pricerange_foodtype_input_dialog_event(self):
-        print("wait")
+        establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Search Food Items from any Establishment based on a given price range AND food type")
+        establishment_name = establishment_name_dialog.get_input()
+        if establishment_name:
+            min_price_dialog = customtkinter.CTkInputDialog(text="Input minimum price:", title="Search Food Items from any Establishment based on a given price range AND food type")
+            min_price = min_price_dialog.get_input()
+            if min_price:
+                max_price_dialog = customtkinter.CTkInputDialog(text="Input maximum price:", title="Search Food Items from any Establishment based on a given price range AND food type")
+                max_price = max_price_dialog.get_input()
+                if max_price:
+                    food_type_dialog = customtkinter.CTkInputDialog(text="Input food type:", title="Search Food Items from any Establishment based on a given price range AND food type")
+                    food_type = food_type_dialog.get_input()
+                    if food_type:
+                        try:
+                            min_price = float(min_price)
+                            max_price = float(max_price)
+                            if min_price > max_price:
+                                print("Minimum price must be less than or equal to maximum price")
+                            elif max_price > 9999.99:
+                                print("Maximum price must be less than or equal to 9999.99")
+                            else:
+                                summary_report.read_all_food_items_any_establishment_pricerange_foodtype(self.connection, establishment_name, min_price, max_price, food_type)
+                        except ValueError:
+                            print("Please enter a valid number for price")
+                    else:
+                        print("Input food type input was canceled")
+                else:
+                    print("Input maximum price input was canceled")
+            else:
+                print("Input minimum price input was canceled")
+        else:
+            print("Input establishment name input was canceled")
+
+
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
@@ -493,6 +850,7 @@ class App(customtkinter.CTk):
         for statement in sql.split(';'):
             if statement.strip():
                 cursor.execute(statement)
+        update_average_rating(connection)
         connection.commit()
         cursor.close()
 

@@ -6,11 +6,18 @@ import project
 # Create Food Review
 def create_food_review(connection, review_message, review_date, review_rating, food_name, establishment_name, user_username):
     try:
-        cursor = connection.cursor()
+        cursor = connection.cursor(buffered=True)
         if establishment_name is None or establishment_name.strip() == "":
             print("You can't create a food review not associated to an establishment.") # No food and establishment
             return
         elif food_name is None or food_name.strip() == "":
+            # Check if the establishment exists
+            query = "SELECT establishment_name FROM foodEstablishment WHERE establishment_name = %s;"
+            cursor.execute(query, (establishment_name,))
+            result = cursor.fetchone()
+            if result is None:
+                print("Please input a valid establishment name.")
+                return
             review_type = 0 # If there is no food
             query = """
             INSERT INTO foodReview(review_type, review_message, review_date, review_rating, review_foodestablishmentid, review_userid)
@@ -22,7 +29,9 @@ def create_food_review(connection, review_message, review_date, review_rating, f
             """
             params = [review_type, review_message, review_date, review_rating, establishment_name, user_username]
         else:
-            result = cursor.execute("SELECT food_name FROM foodItem WHERE food_foodestablishmentid = (SELECT establishment_id from foodestablishment WHERE establishment_name = %s);", (establishment_name,))
+            cursor.execute("SELECT food_name FROM foodItem WHERE food_foodestablishmentid = (SELECT establishment_id from foodestablishment WHERE establishment_name = %s);", (establishment_name,))
+            result = cursor.fetchone()
+            print(result)
             if result is None:
                 print("Please input a food name that is associated to an establishment.")
                 return
@@ -116,13 +125,41 @@ def read_certain_food_reviews(connection, food_name, user_username, establishmen
 # Update Food Review
 def update_food_review(connection, food_name, user_username, establishment_name, review_date, input_attribute, input_value):
     try:
+        cursor = connection.cursor()
         print("\nUpdating food review...")
+        # Verify if the user exists
+        cursor.execute("SELECT user_id FROM user WHERE user_username = %s", (user_username,))
+        user_id = cursor.fetchone()
+        if user_id is None:
+            print("User does not exist")
+            return
+
+        
         # This checks whether an additional query is needed or not.
         if food_name and food_name.strip() != "":
-            added_query = """(review_foodestablishmentid = (SELECT establishment_id FROM foodEstablishment WHERE establishment_name = %s)
-            OR review_fooditemid = (SELECT food_id FROM foodItem WHERE food_name = %s))"""
-            params = [input_value, user_username, review_date, 1, establishment_name, food_name]
+            # Verify if the establishment and the food item exist
+            cursor.execute("SELECT establishment_id FROM foodEstablishment WHERE establishment_name = %s", (establishment_name,))
+            establishment_id = cursor.fetchone()
+            if establishment_id is None:
+                print("Establishment does not exist")
+                return
+
+            cursor.execute("SELECT food_id FROM foodItem WHERE food_name = %s AND food_foodestablishmentid = %s", (food_name, establishment_id[0]))
+            food_id = cursor.fetchone()
+            if food_id is None:
+                print("Food Item does not exist in the specified establishment")
+                return
+
+            added_query = "(review_fooditemid = (SELECT food_id FROM foodItem WHERE food_name = %s)"
+            params = [input_value, user_username, review_date, 1, food_name]
         else:
+            # Check if the establishment exists
+            cursor.execute("SELECT establishment_name FROM foodEstablishment WHERE establishment_name = %s", (establishment_name,))
+            result = cursor.fetchone()
+            if result is None:
+                print("Please input a valid establishment name.")
+                return
+
             added_query = "(review_foodestablishmentid = (SELECT establishment_id FROM foodEstablishment WHERE establishment_name = %s))"
             params = [input_value, user_username, review_date, 0, establishment_name]
         
@@ -139,7 +176,6 @@ def update_food_review(connection, food_name, user_username, establishment_name,
 
         print(query)
         
-        cursor = connection.cursor()
         cursor.execute(query, tuple(params))
         
         # Error handling to check if an update happened:

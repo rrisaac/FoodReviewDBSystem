@@ -74,7 +74,7 @@ def update_user(connection, input_attribute, user_username, input_username):
         old_value_result = cursor.fetchone()
         
         if old_value_result is None:
-            print("\nFood item '{}' does not exist.\n".format(user_username))
+            print("\nUser '{}' does not exist.\n".format(user_username))
             return # Return if food item is non-existent.
         
         old_value = old_value_result[0] # If old_value exists, proceed to get the old_value

@@ -189,8 +189,9 @@ class App(customtkinter.CTk):
         
         
         # create table
-        self.table = CTkTable(self, row=10, column=5, width=250, hover=True)
+        self.table = CTkTable(self, row=30, column=5, width=250, hover=True)
         self.table.grid(row=2, column=1, columnspan=2, padx=(20, 20), pady=(0, 0), sticky="nsew")
+        
 
         query = f"""
         SELECT * FROM foodItem
@@ -309,7 +310,10 @@ class App(customtkinter.CTk):
         
     def read_all_food_establishments_input_dialog_event(self):
         # Insert process here
-        food_establishment.read_all_food_establishments(self.connection)
+        tabledata = food_establishment.read_all_food_establishments(self.connection)
+        print(tabledata)
+        
+        self.populate_table(self.table, tabledata)
         
     
     def read_certain_food_establishment_input_dialog_event(self):
@@ -853,6 +857,14 @@ class App(customtkinter.CTk):
         update_average_rating(connection)
         connection.commit()
         cursor.close()
+        
+    def populate_table(self, table, data):
+        # Clear existing data in the table
+        # self.table.clear()  # Assuming there's a method to clear the table
+    
+    # Add data to the table
+        for row in data:
+            self.table.add_row(row)  # Assuming there's a method to add rows to the table
 
 
 if __name__ == "__main__":

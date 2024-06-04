@@ -32,6 +32,7 @@ def read_all_food_establishments(connection):
                 print(establishment)
             print("\n")
         
+            return(establishments)
         # Else, empty set...
         else:
             print("\nNo Food Establishments found.\n")

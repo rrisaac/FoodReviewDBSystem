@@ -206,29 +206,9 @@ class App(customtkinter.CTk):
         self.canvas.create_window((0, 0), window=self.inner_frame, anchor="nw")
         # Make the inner frame expand with the canvas
         self.inner_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
-        # Create the table inside the inner frame
-        # self.table = CTkTable(self.inner_frame, row=30, column=5, width=250, hover=True)
-        # self.table.grid(row=0, column=0, padx=(20, 20), pady=(0, 0), sticky="nsew")
         # Assuming self.inner_frame is already defined and is a valid Frame
-        
-
-        # Setting the column headings
-        # self.table.heading("Column1", text="Lexeme")
-        # self.table.heading("Column2", text="Classification")
-        # self.table.heading("Column3", text="Lexeme")
-        # self.table.heading("Column4", text="Classification")
-        # self.table.heading("Column5", text="Lexeme")
-        # self.table.heading("Column6", text="Classification")
-        # self.table.heading("Column7", text="Lexeme")
-        # self.table.heading("Column8", text="Classification")
-
-        #
-        
-        
-        # # create table
-        # self.table = CTkTable(self, row=10, column=5, width=250, hover=True)
-        # self.table.grid(row=2, column=1, columnspan=2, padx=(20, 20), pady=(0, 0), sticky="nsew")
-                
+        self.table = ttk.Treeview(self.inner_frame, columns=("Column1"))
+              
 
         query = f"""
         SELECT * FROM foodItem
@@ -353,10 +333,10 @@ class App(customtkinter.CTk):
         
         if tabledata is None:
             print('No output')
+            messagebox.showinfo("Message", "Empty Dataset.")
         else:
-            # Clear existing items in the Treeview
-            for item in self.table.get_children():
-                self.table.delete(item)
+            if self.table:
+                self.table.destroy()
             
             # Create the Treeview table
             self.table = ttk.Treeview(self.inner_frame, columns=("Column1", "Column2", "Column3"), show="headings")

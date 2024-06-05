@@ -967,7 +967,11 @@ class App(customtkinter.CTk):
 
     # Summary Report Inputs
     def read_all_food_establishments_input_dialog_event_2(self):
-        summary_report.read_all_food_establishments(self.connection)
+        query = summary_report.read_all_food_establishments(self.connection)
+        # Clear and update existing content in the textbox
+        self.textbox.delete(1.0, tk.END)
+        self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+        
     
     def read_all_food_reviews_establishment_input_dialog_event(self):
         establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Reviews for an Establishment")

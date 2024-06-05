@@ -5,7 +5,9 @@ def read_all_food_establishments(connection):
     print("\nViewing all food establishments...")
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM foodEstablishment;")
+        query = "SELECT * FROM foodEstablishment;"
+        cursor.execute(query)
+
         establishments = cursor.fetchall()
 
         if establishments:
@@ -15,6 +17,8 @@ def read_all_food_establishments(connection):
             print("\n")
         else:
             print("\nNo food establishments found.\n")
+            return (query, [])
+        return (query, establishments)
 
     except mysql.connector.Error as err:
         print("\nError:", err)
@@ -25,7 +29,8 @@ def read_all_food_reviews_establishment(connection, establishment_name):
     print("\nViewing all food reviews for an establishment...")
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM foodReview WHERE review_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = %s);", (establishment_name,))
+        query = "SELECT * FROM foodReview WHERE review_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = %s);"
+        cursor.execute(query, (establishment_name,))
         reviews = cursor.fetchall()
 
         if reviews:
@@ -35,6 +40,8 @@ def read_all_food_reviews_establishment(connection, establishment_name):
             print("\n")
         else:
             print("\nNo food reviews found for this establishment.\n")
+            return (query % (establishment_name,), [])
+        return (query % (establishment_name,), reviews)
 
     except mysql.connector.Error as err:
         print("\nError:", err)
@@ -45,7 +52,8 @@ def read_all_food_reviews_item(connection, food_item_name):
     print("\nViewing all food reviews for a food item...")
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM foodReview WHERE review_fooditemid = (SELECT food_id FROM foodItem WHERE item_name = %s);", (food_item_name,))
+        query = "SELECT * FROM foodReview WHERE review_fooditemid = (SELECT food_id FROM foodItem WHERE item_name = %s);"
+        cursor.execute(query, (food_item_name,))
         reviews = cursor.fetchall()
 
         if reviews:
@@ -55,6 +63,8 @@ def read_all_food_reviews_item(connection, food_item_name):
             print("\n")
         else:
             print("\nNo food reviews found for this food item.\n")
+            return (query % (food_item_name,), [])
+        return (query % (food_item_name,), reviews)
 
     except mysql.connector.Error as err:
         print("\nError:", err)
@@ -65,7 +75,9 @@ def read_all_food_items_establishment(connection, establishment_name):
     print("\nViewing all food items from an establishment...")
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM foodItem WHERE food_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = %s);", (establishment_name,))
+        query = "SELECT * FROM foodItem WHERE food_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = %s);"
+        cursor.execute(query, (establishment_name,))
+
         items = cursor.fetchall()
 
         if items:
@@ -75,6 +87,8 @@ def read_all_food_items_establishment(connection, establishment_name):
             print("\n")
         else:
             print("\nNo food items found for this establishment.\n")
+            return (query % (establishment_name,), [])
+        return (query % (establishment_name,), items)
 
     except mysql.connector.Error as err:
         print("\nError:", err)
@@ -87,7 +101,10 @@ def read_all_food_reviews_item(connection, food_name):
     print("\nViewing all food reviews for a food item...")
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM foodReview WHERE review_fooditemid = (SELECT food_id FROM fooditem WHERE food_name = %s);", (food_name,))
+        query = "SELECT review_id, review_type, review_message, review_date, review_rating, review_fooditemid, review_foodestablishmentid, review_userid FROM foodReview WHERE review_fooditemid = (SELECT food_id FROM fooditem WHERE food_name = %s);"
+        params = (food_name,)
+        cursor.execute(query, params)
+
         reviews = cursor.fetchall()
 
         if reviews:
@@ -97,7 +114,8 @@ def read_all_food_reviews_item(connection, food_name):
             print("\n")
         else:
             print("\nNo food reviews found for this food item.\n")
-
+            return (query % params, [])
+        return (query % params, reviews)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch food reviews.\n")
@@ -134,7 +152,8 @@ def read_all_food_items_establishment_foodtype(connection, establishment_name, f
         # Else, empty set...
         else:
             print(f"\nNo food items found from \"{establishment_name}\" that belong to food type \"{food_type}\".\n")
-    
+            return (query, [])
+        return (query, results)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch food items.\n")
@@ -171,7 +190,8 @@ def read_all_food_reviews_establishment_month(connection, establishment_name, mo
         # Else, empty set...
         else:
             print(f"\nNo food reviews found from \"{establishment_name}\" during {month}.\n")
-    
+            return (query, [])
+        return (query, results)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch food reviews.\n")
@@ -207,7 +227,8 @@ def read_all_food_reviews_item_month(connection, food_item, month):
         # Else, empty set...
         else:
             print(f"\nNo food reviews about \"{food_item}\" during {month}.\n")
-    
+            return (query, [])
+        return (query, results)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch food reviews.\n")
@@ -225,7 +246,8 @@ def read_all_food_establishments_highrating(connection):
                 print(result, "\n")
         else:
             print("There are currently no food establishments with a high (>=4) average rating") 
-       
+            return(query, [])
+        return(query, results)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch food establishments.")
@@ -246,7 +268,8 @@ def read_all_food_items_establishment_orderprice(connection, establishment_name)
                 print("\n", result)
         else:
             print(f"There are currently no food items in the specified establishment '{establishment_name}'")
-            
+            return(query % (establishment_name,), [])
+        return(query % (establishment_name,), results)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print("Failed to fetch food items from an establishment according to food price.")
@@ -265,7 +288,8 @@ def read_all_food_items_any_establishment_pricerange(connection, establishment_n
                 print("\n", result)
         else:
             print(f"Failed to fetch food items from an establishment '{establishment_name}' from food price {min_price} to {max_price}.")
-
+            return(query % (establishment_name, min_price, max_price), [])
+        return(query % (establishment_name, min_price, max_price), results)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print(f"Failed to retrieve any food items in establishment {establishment_name} with specified food price {min_price} to {max_price}")
@@ -283,8 +307,11 @@ def read_all_food_items_any_establishment_foodtype(connection, establishment_nam
             for result in results:
                 print("\n", result)
         else:
+            query = f"SELECT * FROM fooditem WHERE food_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = {establishment_name}) AND (food_type LIKE '%{food_type}%');"
             print(f"Failed to fetch food items from an establishment '{establishment_name}' with food type {food_type}")
-
+            return(query, [])
+        query = f"SELECT * FROM fooditem WHERE food_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = {establishment_name}) AND (food_type LIKE '%{food_type}%');"
+        return(query, results)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print(f"Failed to retrieve any food items in establishment {establishment_name} with specified food type {food_type}")
@@ -302,7 +329,10 @@ def read_all_food_items_any_establishment_pricerange_foodtype(connection, establ
                 print("\n", result)
         else:
             print(f"Failed to fetch food items from an establishment '{establishment_name}' from food price {min_price} to {max_price} with food type {food_type}.")
-
+            query = f"SELECT * FROM fooditem WHERE food_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = {establishment_name}) AND (food_price BETWEEN {min_price} AND {max_price}) AND (food_type LIKE '%{food_type}%');"
+            return(query, [])
+        query = f"SELECT * FROM fooditem WHERE food_foodestablishmentid = (SELECT establishment_id FROM foodestablishment WHERE establishment_name = {establishment_name}) AND (food_price BETWEEN {min_price} AND {max_price}) AND (food_type LIKE '%{food_type}%');"
+        return(query, results)
     except mysql.connector.Error as err:
         print("\nError:", err)
         print(f"Failed to retrieve any food items in establishment {establishment_name} with specified food price {min_price} to {max_price} with food type {food_type}")

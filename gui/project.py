@@ -1390,9 +1390,9 @@ class App(customtkinter.CTk):
                     food_type_dialog = customtkinter.CTkInputDialog(text="Input food type:", title="Search Food Items from any Establishment based on a given price range AND food type")
                     food_type = food_type_dialog.get_input()
                     if food_type:
-                        try:
                             min_price = float(min_price)
                             max_price = float(max_price)
+                            print(min_price, max_price)
                             if min_price > max_price:
                                 print("Minimum price must be less than or equal to maximum price")
                             elif max_price > 9999.99:
@@ -1427,9 +1427,6 @@ class App(customtkinter.CTk):
                                     # Clear and update existing content in the textbox
                                     self.textbox.delete(1.0, tk.END)
                                     self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
-                                
-                        except ValueError:
-                            print("Please enter a valid number for price")
                     else:
                         print("Input food type input was canceled")
                 else:

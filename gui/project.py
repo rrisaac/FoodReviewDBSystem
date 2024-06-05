@@ -113,7 +113,7 @@ class App(customtkinter.CTk):
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, command=self.show_about, text="About")
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event, text="Refresh Ratings")
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, command=lambda: update_average_rating(self.connection), text="Refresh Ratings")
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, fg_color="#b30000", hover_color="#800303",command=self.clear_elements)
         self.sidebar_button_3.grid(row=8, column=0, padx=20, pady=(10, 20))

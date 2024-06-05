@@ -117,7 +117,7 @@ class App(customtkinter.CTk):
         self.main_button_1.grid(row=3, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         # create textbox
-        self.textbox = customtkinter.CTkTextbox(self, width=250,  height=100, font=customtkinter.CTkFont(size=12, weight="bold"))
+        self.textbox = customtkinter.CTkTextbox(self, width=250,  height=100, font=customtkinter.CTkFont(size=12, weight="bold"), wrap="word")
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
 
         # create tabview

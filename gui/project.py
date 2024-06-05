@@ -102,11 +102,11 @@ class App(customtkinter.CTk):
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="FoodRevPH", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event, text="About")
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, command=self.show_about, text="About")
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event, text="Refresh Ratings")
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, fg_color="#b30000", hover_color="#800303",command=self.sidebar_button_event)
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, fg_color="#b30000", hover_color="#800303",command=self.clear_elements)
         self.sidebar_button_3.grid(row=8, column=0, padx=20, pady=(10, 20))
 
         # create main entry and button
@@ -194,11 +194,12 @@ class App(customtkinter.CTk):
         self.table_frame = ttk.Frame(self)
         self.table_frame.grid(row=2, column=1, columnspan=2, padx=(20, 20), pady=(0, 0), sticky="nsew")
         # Create a canvas inside the frame
-        self.canvas = tk.Canvas(self.table_frame, bg="gray10")
+        self.canvas = tk.Canvas(self.table_frame, bg="gray10", bd=0, highlightthickness=0, relief='ridge')
         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         # Add a scrollbar to the canvas
         self.scrollbar = ttk.Scrollbar(self.table_frame, orient=tk.VERTICAL, command=self.canvas.yview)
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.scrollbar.pack_forget()
         # Configure the canvas to use the scrollbar
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
         # Create another frame inside the canvas
@@ -215,6 +216,9 @@ class App(customtkinter.CTk):
         # self.scaling_optionemenu.set("100%")
         self.optionmenu_1.set("Create Food Establishment")
         self.textbox.insert("0.0", "SQL Query\n" + "\n\n")
+        style = ttk.Style(self)
+        style.theme_use("clam")
+        style.configure("Treeview", background="gray10", fieldbackground="gray10", foreground="white")
        
         
     def dynamic_command_food_establishment(self):
@@ -332,6 +336,7 @@ class App(customtkinter.CTk):
     def buildHeaders(self, columns, headers):
         for x in range(len(columns)):
             self.table.heading(columns[x], text=headers[x])
+            self.table.column(columns[x],anchor="c")
     
     def read_all_food_establishments_input_dialog_event(self):
         # Insert process here
@@ -347,7 +352,7 @@ class App(customtkinter.CTk):
             query = tabledata[0]
             data = tabledata[1]
             columns = self.buildColumns(len(data[0]))
-
+            
             # Create the Treeview table
             self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
             
@@ -744,7 +749,7 @@ class App(customtkinter.CTk):
             query = tabledata[0]
             data = tabledata[1]
             columns = self.buildColumns(len(data[0]))
-
+            
             # Create the Treeview table
             self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
             
@@ -1480,8 +1485,17 @@ class App(customtkinter.CTk):
 
         # Ensure the inner_frame expands with its parent widget if needed
         self.inner_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-
+        
+    def clear_elements(self):
+        if self.table:
+            self.table.destroy()
+        self.textbox.delete(1.0, tk.END)
+        self.textbox.insert("0.0", "SQL Query\n" + "\n\n")
+        
+    def show_about(self):
+        messagebox.showinfo("About", "\t     CMSC 128 S-5L (Group 2)\t\n\n\t\tRey Isaac Jr.\t\t\n\n\t\tKlenn Borja\t\t\n\n\t\tBea Capule\t\t")
+        
+        
 if __name__ == "__main__":
     app = App()
     app.mainloop()

@@ -967,11 +967,35 @@ class App(customtkinter.CTk):
 
     # Summary Report Inputs
     def read_all_food_establishments_input_dialog_event_2(self):
-        query = summary_report.read_all_food_establishments(self.connection)
-        # Clear and update existing content in the textbox
-        self.textbox.delete(1.0, tk.END)
-        self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
+        tabledata = summary_report.read_all_food_establishments(self.connection)
         
+        if tabledata is None or tabledata[1] == []:
+            print('No output')
+            messagebox.showinfo("Message", "Empty Dataset.")
+        else:
+            if self.table:
+                self.table.destroy()
+            query = tabledata[0]
+            data = tabledata[1]
+            columns = self.buildColumns(len(data[0]))
+            
+            # Create the Treeview table
+            self.table = ttk.Treeview(self.inner_frame, columns=tuple(columns), show="headings")
+            
+            # Define the headings for each column
+            self.buildHeaders(columns, ["Establishment ID", "Establishment Name", "Establishment Average Rating"])
+            # Insert the fetched data into the table
+            for row in data:
+                self.table.insert("", "end", values=row)
+            
+            # Pack the table into the inner_frame
+            self.table.pack(expand=True, fill='both')
+            
+            self.stretch_table()
+            
+            # Clear and update existing content in the textbox
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "SQL Query\n\n" + query + "\n\n")
     
     def read_all_food_reviews_establishment_input_dialog_event(self):
         establishment_name_dialog = customtkinter.CTkInputDialog(text="Input establishment name:", title="Read All Food Reviews for an Establishment")

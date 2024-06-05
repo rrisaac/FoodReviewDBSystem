@@ -22,47 +22,56 @@ customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 def update_average_rating(connection):
-        try:
-            cursor = connection.cursor()
+    try:
+        cursor = connection.cursor()
 
-            # Calculate average rating for each establishment
+        # Set initial average ratings for all establishments to zero
+        cursor.execute("UPDATE foodEstablishment SET establishment_averagerating = 0")
+        connection.commit()
+        
+        # Calculate and update average rating for each establishment
+        cursor.execute("""
+            SELECT review_foodestablishmentid, AVG(review_rating) AS avg_rating
+            FROM foodReview
+            WHERE review_type = 0
+            GROUP BY review_foodestablishmentid
+        """)
+        establishment_ratings = cursor.fetchall()
+        
+        for establishment_id, avg_rating in establishment_ratings:
             cursor.execute("""
-                SELECT review_foodestablishmentid, AVG(review_rating) AS avg_rating
-                FROM foodReview
-                WHERE review_type = 0
-                GROUP BY review_foodestablishmentid
-            """)
-            establishment_ratings = cursor.fetchall()
+                UPDATE foodEstablishment
+                SET establishment_averagerating = %s
+                WHERE establishment_id = %s
+            """, (avg_rating, establishment_id))
 
-            # Update average rating for each establishment
-            for establishment_id, avg_rating in establishment_ratings:
-                cursor.execute("""
-                    UPDATE foodEstablishment
-                    SET establishment_averagerating = %s
-                    WHERE establishment_id = %s
-                """, (avg_rating, establishment_id))
+        # Set initial average ratings for all food items to zero
+        cursor.execute("UPDATE foodItem SET food_averagerating = 0")
+        connection.commit()
+        
+        # Calculate and update average rating for each food item
+        cursor.execute("""
+            SELECT review_fooditemid, AVG(review_rating) AS avg_rating
+            FROM foodReview
+            WHERE review_type = 1
+            GROUP BY review_fooditemid
+        """)
+        fooditem_ratings = cursor.fetchall()
 
+        for food_id, avg_rating in fooditem_ratings:
             cursor.execute("""
-                SELECT review_fooditemid, AVG(review_rating) AS avg_rating
-                FROM foodReview
-                WHERE review_type = 1
-                GROUP BY review_fooditemid
-            """)
-            fooditem_ratings = cursor.fetchall()
+                UPDATE foodItem
+                SET food_averagerating = %s
+                WHERE food_id = %s
+            """, (avg_rating, food_id))
 
-            # Update average rating for each food item
-            for food_id, avg_rating in fooditem_ratings:
-                cursor.execute("""
-                    UPDATE foodItem
-                    SET food_averagerating = %s
-                    WHERE food_id = %s
-                """, (avg_rating, food_id))
+        print("Average ratings updated successfully!")
+        connection.commit()
 
-            print("Average ratings updated successfully!")
+    except mysql.connector.Error as err:
+        connection.rollback()
+        print("Error updating average ratings:", err)
 
-        except mysql.connector.Error as err:
-            connection.rollback()
-            print("Error updating average ratings:", err)
 
 class App(customtkinter.CTk):
     def __init__(self):
